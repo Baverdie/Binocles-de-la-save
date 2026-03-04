@@ -1,0 +1,11 @@
+export { default as MarqueModel } from "./Marque";
+export { default as AvantPremiereModel } from "./AvantPremiere";
+export { default as ArticleModel } from "./Article";
+export { default as ContactModel } from "./Contact";
+export { default as RdvModel } from "./Rdv";
+export { default as ConfigRdvModel } from "./ConfigRdv";
+export { default as FermetureModel } from "./Fermeture";
+export { default as HoraireModel } from "./Horaire";
+export { default as VacancesModel } from "./Vacances";
+export { default as OuvertureExceptionnelleModel } from "./OuvertureExceptionnelle";
+export { default as AdminModel } from "./Admin";
