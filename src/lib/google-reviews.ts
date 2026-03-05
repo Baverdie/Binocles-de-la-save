@@ -29,6 +29,7 @@ export async function getGoogleReviews(): Promise<GooglePlaceData | null> {
         headers: {
           "X-Goog-Api-Key": API_KEY,
           "X-Goog-FieldMask": "rating,userRatingCount,reviews",
+          "Referer": process.env.NEXT_PUBLIC_APP_URL ?? "https://binoclesdelasave.fr",
         },
         next: { revalidate: 86400 }, // Cache 24 heures
       }
