@@ -43,6 +43,7 @@ export default function HorairesSection() {
   const [horaires, setHoraires] = useState<HoraireApi[]>([]);
   const [vacances, setVacances] = useState<VacancesApi[]>([]);
   const [fermetures, setFermetures] = useState<FermetureApi[]>([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     async function fetchHoraires() {
@@ -204,24 +205,37 @@ export default function HorairesSection() {
               Me trouver
             </h2>
 
-            {/* Google Maps */}
+            {/* Google Maps — lazy load au clic pour éviter les cookies tiers */}
             <motion.div
               initial={{ opacity: 0, scale: 0.92 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.5, delay: 0.3, type: "spring", stiffness: 100, damping: 16 }}
               className="relative aspect-4/3 mb-6 overflow-hidden rounded-2xl border border-brown/10"
             >
-              <iframe
-                src="https://www.google.com/maps?q=Binocles+de+la+Save+Levignac&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: "sepia(30%) saturate(70%) hue-rotate(-10deg)" }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Localisation Binocles de la Save"
-                className="absolute inset-0"
-              />
+              {mapLoaded ? (
+                <iframe
+                  src="https://www.google.com/maps?q=Binocles+de+la+Save+Levignac&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, filter: "sepia(30%) saturate(70%) hue-rotate(-10deg)" }}
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Localisation Binocles de la Save"
+                  className="absolute inset-0"
+                />
+              ) : (
+                <button
+                  onClick={() => setMapLoaded(true)}
+                  className="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-brown/5 hover:bg-brown/10 transition-colors cursor-pointer"
+                  aria-label="Charger la carte Google Maps"
+                >
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-brown/40">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    <circle cx="12" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+                  </svg>
+                  <span className="text-xs text-brown/50">Afficher la carte</span>
+                </button>
+              )}
             </motion.div>
 
             {/* Adresse */}
