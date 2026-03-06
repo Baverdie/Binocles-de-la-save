@@ -29,11 +29,10 @@ export default auth(async function middleware(request: NextRequest) {
     }
   }
 
-  // For main domain: block access to /admin/* routes
+  // For main domain: block /admin/* only if a dedicated admin domain is configured
   if (!isAdminSubdomain && pathname.startsWith("/admin")) {
-    // In development, allow direct /admin access
-    const isDev = process.env.NODE_ENV === "development";
-    if (!isDev) {
+    const adminDomain = process.env.ADMIN_DOMAIN;
+    if (adminDomain) {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
