@@ -25,6 +25,13 @@
     "swiper": "^12.1.0",
     "zod": "^4.3.6"
   },
+  "browserslist": [
+    "Chrome >= 90",
+    "Firefox >= 90",
+    "Edge >= 90",
+    "Safari >= 14",
+    "iOS >= 14"
+  ],
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",

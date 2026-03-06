@@ -34,7 +34,7 @@ export default function Footer() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm text-brown/60 hover:text-brown transition-colors duration-300"
+                className="text-sm text-brown/75 hover:text-brown transition-colors duration-300"
               >
                 {item.name}
               </Link>
@@ -44,12 +44,12 @@ export default function Footer() {
 
         {/* Middle: Contact info in a row */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 md:gap-12 py-6 sm:py-8 border-y border-brown/10">
-          <address className="not-italic text-sm text-brown/60">
+          <address className="not-italic text-sm text-brown/75">
             42 Avenue de la République, 31530 Levignac
           </address>
           <a
             href="tel:+33534521969"
-            className="text-sm text-brown/60 hover:text-brown transition-colors duration-300"
+            className="text-sm text-brown/75 hover:text-brown transition-colors duration-300"
           >
             05 34 52 19 69
           </a>
@@ -84,17 +84,17 @@ export default function Footer() {
         {/* Bottom: Copyright + Legal */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <p className="text-xs text-brown/30">
+            <p className="text-xs text-brown/55">
               © {new Date().getFullYear()} Binocles de la Save
             </p>
             <span className="hidden sm:inline text-accent/40">•</span>
-            <p className="text-xs text-brown/30">
+            <p className="text-xs text-brown/55">
               Site créé par{" "}
               <a
                 href="https://baverdie.dev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brown/50 hover:text-brown transition-colors duration-300"
+                className="text-brown/70 hover:text-brown transition-colors duration-300 underline"
               >
                 Baverdie
               </a>
@@ -103,13 +103,13 @@ export default function Footer() {
           <div className="flex gap-6">
             <Link
               href="/mentions-legales"
-              className="text-xs text-brown/30 hover:text-brown/60 transition-colors duration-300"
+              className="text-xs text-brown/55 hover:text-brown transition-colors duration-300 underline"
             >
               Mentions légales
             </Link>
             <Link
               href="/confidentialite"
-              className="text-xs text-brown/30 hover:text-brown/60 transition-colors duration-300"
+              className="text-xs text-brown/55 hover:text-brown transition-colors duration-300 underline"
             >
               Confidentialité
             </Link>
