@@ -46,7 +46,7 @@ export default function HeroSection({ prochainEvenement }: HeroSectionProps) {
       </div>
 
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-brown/0 via-brown/50 to-brown" />
+      <div className="absolute inset-0 bg-linear-to-b from-brown/0 via-brown/50 to-brown" />
 
       {/* Empty top-left */}
       <div />
