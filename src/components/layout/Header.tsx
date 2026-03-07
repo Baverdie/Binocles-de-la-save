@@ -51,6 +51,7 @@ export default function Header() {
                 src="/logo/Big/bds-big-light.png"
                 alt="Binocles de la Save"
                 fill
+                sizes="160px"
                 className={`object-contain object-left transition-opacity duration-300 ${
                   dark ? "opacity-0" : "opacity-100"
                 }`}
@@ -60,6 +61,7 @@ export default function Header() {
                 src="/logo/Big/bds-big.png"
                 alt="Binocles de la Save"
                 fill
+                sizes="160px"
                 className={`object-contain object-left transition-opacity duration-300 ${
                   dark ? "opacity-100" : "opacity-0"
                 }`}

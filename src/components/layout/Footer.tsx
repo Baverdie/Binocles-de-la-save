@@ -24,6 +24,7 @@ export default function Footer() {
                 src="/logo/Big/bds-big.png"
                 alt="Binocles de la Save"
                 fill
+                sizes="144px"
                 className="object-contain object-left"
               />
             </div>
@@ -84,17 +85,17 @@ export default function Footer() {
         {/* Bottom: Copyright + Legal */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <p className="text-xs text-brown/55">
+            <p className="text-xs text-brown/75">
               © {new Date().getFullYear()} Binocles de la Save
             </p>
             <span className="hidden sm:inline text-accent/40">•</span>
-            <p className="text-xs text-brown/55">
+            <p className="text-xs text-brown/75">
               Site créé par{" "}
               <a
                 href="https://baverdie.dev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-brown/70 hover:text-brown transition-colors duration-300 underline"
+                className="text-brown/75 hover:text-brown transition-colors duration-300 underline"
               >
                 Baverdie
               </a>
@@ -103,13 +104,13 @@ export default function Footer() {
           <div className="flex gap-6">
             <Link
               href="/mentions-legales"
-              className="text-xs text-brown/55 hover:text-brown transition-colors duration-300 underline"
+              className="text-xs text-brown/75 hover:text-brown transition-colors duration-300 underline"
             >
               Mentions légales
             </Link>
             <Link
               href="/confidentialite"
-              className="text-xs text-brown/55 hover:text-brown transition-colors duration-300 underline"
+              className="text-xs text-brown/75 hover:text-brown transition-colors duration-300 underline"
             >
               Confidentialité
             </Link>

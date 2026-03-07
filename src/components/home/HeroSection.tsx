@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 import type { ProchainEvenement } from "@/app/(site)/page";
 
 interface HeroSectionProps {
@@ -9,6 +10,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ prochainEvenement }: HeroSectionProps) {
+  const [ctaVisible, setCtaVisible] = useState(false);
   // Animation blur pour le titre (effet de mise au point optique)
   const focusAnimation = {
     initial: { filter: "blur(12px)", opacity: 0.8 },
@@ -159,9 +161,11 @@ export default function HeroSection({ prochainEvenement }: HeroSectionProps) {
       {/* CTA Buttons - centered and bottom */}
       <div className="relative z-10 text-center flex flex-col justify-center px-6">
         <motion.div
+          aria-hidden={!ctaVisible}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.9, duration: 0.6 }}
+          onAnimationComplete={() => setCtaVisible(true)}
           className="flex flex-col gap-3"
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
