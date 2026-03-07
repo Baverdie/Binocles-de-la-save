@@ -187,12 +187,13 @@ export function templateConfirmationRdv(data: {
   typeRdv: string;
   adresse: string;
   telephone: string;
+  cancelUrl?: string;
 }) {
   return emailLayout(`
     ${badge("Confirmation")}
     ${heading("Votre rendez-vous est confirmé")}
     ${paragraph(`Bonjour ${data.prenom},`)}
-    ${paragraph("Nous avons bien enregistré votre rendez-vous. Voici les détails :")}
+    ${paragraph("J'ai bien enregistré votre rendez-vous. Voici les détails :")}
     ${infoCard([
       infoRow("Date", data.date),
       infoRow("Horaire", data.heure),
@@ -204,7 +205,8 @@ export function templateConfirmationRdv(data: {
       `<span style="color: ${COLORS.grayText};">Tél. ${data.telephone}</span>`,
     ])}
     ${smallText("Un fichier calendrier est joint à cet email pour ajouter le rendez-vous à votre agenda.")}
-    ${paragraph("En cas d'empêchement, merci de nous prévenir au moins 24h à l'avance en répondant à cet email ou en nous appelant.")}
+    ${paragraph("En cas d'empêchement, merci de me prévenir au moins 24h à l'avance.")}
+    ${data.cancelUrl ? `<div style="text-align: center; margin: 24px 0;"><a href="${data.cancelUrl}" style="font-size: 13px; color: ${COLORS.grayText}; text-decoration: underline;">Annuler mon rendez-vous</a></div>` : ""}
     ${signature()}
   `);
 }
@@ -240,6 +242,28 @@ export function templateNotificationNouveauRdv(data: {
   `);
 }
 
+// Email envoyé au client quand C'EST LUI qui annule
+export function templateConfirmationAnnulationClient(data: {
+  prenom: string;
+  date: string;
+  heure: string;
+}) {
+  return emailLayout(`
+    ${badge("Annulation confirmée")}
+    ${heading("Votre rendez-vous a bien été annulé")}
+    ${paragraph(`Bonjour ${data.prenom},`)}
+    ${paragraph("Votre demande d'annulation a bien été prise en compte.")}
+    ${infoCard([
+      infoRow("Date", data.date),
+      infoRow("Horaire", data.heure),
+    ])}
+    ${paragraph("Vous pouvez reprendre rendez-vous à tout moment.")}
+    ${button("Reprendre rendez-vous", "https://binoclesdelasave.fr/rendez-vous")}
+    ${signature()}
+  `);
+}
+
+// Email envoyé au client quand C'EST L'OPTICIENNE qui annule
 export function templateAnnulationRdv(data: {
   prenom: string;
   date: string;
@@ -249,13 +273,40 @@ export function templateAnnulationRdv(data: {
 }) {
   return emailLayout(`
     ${badge("Annulation")}
-    ${heading("Rendez-vous annulé")}
+    ${heading("Votre rendez-vous a été annulé")}
     ${paragraph(`Bonjour ${data.prenom},`)}
-    ${paragraph(`Votre rendez-vous du <strong>${data.date}</strong> a <strong>${data.heure}</strong> a été annulé.`)}
+    ${paragraph(`Je suis au regret de vous informer que votre rendez-vous du <strong>${data.date}</strong> à <strong>${data.heure}</strong> a dû être annulé.`)}
     ${data.raison ? quoteBlock(data.raison, "Motif") : ""}
-    ${paragraph("Nous nous excusons pour ce désagrément.")}
+    ${paragraph("Je m'en excuse sincèrement et espère pouvoir vous accueillir très prochainement.")}
     ${data.proposerAutreCreneau ? button("Reprendre rendez-vous", "https://binoclesdelasave.fr/rendez-vous") : ""}
     ${signature()}
+  `);
+}
+
+export function templateAnnulationParClient(data: {
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone: string;
+  date: string;
+  heure: string;
+  typeRdv: string;
+}) {
+  return emailLayout(`
+    ${badge("Annulation client")}
+    ${heading(`${data.prenom} ${data.nom} a annulé son rendez-vous`)}
+    ${paragraph("Un client vient d'annuler son rendez-vous via le lien dans son email de confirmation.")}
+    ${infoCard([
+      infoRow("Date", data.date),
+      infoRow("Horaire", data.heure),
+      infoRow("Préstation", data.typeRdv),
+    ])}
+    ${infoCard([
+      infoRow("Nom", `${data.prenom} ${data.nom}`),
+      infoRow("Email", `<a href="mailto:${data.email}" style="color: ${COLORS.accent}; text-decoration: none;">${data.email}</a>`),
+      infoRow("Téléphone", `<a href="tel:${data.telephone}" style="color: ${COLORS.accent}; text-decoration: none;">${data.telephone}</a>`),
+    ])}
+    ${button("Voir dans le dashboard", "https://binoclesdelasave.fr/admin/rdv")}
   `);
 }
 
@@ -282,7 +333,7 @@ export function templateRappelRdv(data: {
       `<span style="color: ${COLORS.grayText};">${data.adresse}</span>`,
       `<span style="color: ${COLORS.grayText};">Tél. ${data.telephone}</span>`,
     ])}
-    ${paragraph("En cas d'empêchement, merci de nous prevenir en à cet email ou en nous appelant.")}
+    ${paragraph("En cas d'empêchement, merci de me prévenir par email ou en m'appelant.")}
     <div style="margin-top: 32px;">
       ${paragraph(`À demain,<br /><strong>Sandra Vaissiere</strong>`)}
     </div>

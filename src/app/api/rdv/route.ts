@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import connectDB from "@/lib/db/mongodb";
 import HoraireModel from "@/models/Horaire";
 import RdvModel from "@/models/Rdv";
@@ -103,6 +104,7 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Créer le RDV
+		const cancelToken = randomBytes(32).toString("hex");
 		const rdv = await RdvModel.create({
 			nom,
 			prenom,
@@ -115,6 +117,7 @@ export async function POST(request: NextRequest) {
 			heureFin,
 			duree,
 			statut: "confirme",
+			cancelToken,
 		});
 
 		// Sync Google Calendar (fire-and-forget)
@@ -165,6 +168,7 @@ export async function POST(request: NextRequest) {
 		const icsFilename = genererNomFichierICS(new Date(dateRdv + "T00:00:00"));
 
 		// Email de confirmation au client
+		const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://binoclesdelasave.fr";
 		envoyerEmail({
 			to: email,
 			subject: `Rendez-vous confirmé — ${typeLabel}`,
@@ -174,7 +178,8 @@ export async function POST(request: NextRequest) {
 				heure: heureFormatee,
 				typeRdv: typeLabel,
 				adresse: "42 Avenue de la République, 31530 Levignac",
-				telephone: "05 62 XX XX XX",
+				telephone: "05 34 52 19 69",
+				cancelUrl: `${appUrl}/rendez-vous/annuler/${cancelToken}`,
 			}),
 			attachments: [
 				{

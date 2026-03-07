@@ -123,7 +123,7 @@ export default function AProposPage() {
               className="relative aspect-[4/5] max-h-[50vh] sm:max-h-none rounded-2xl sm:rounded-3xl overflow-hidden"
             >
               <Image
-                src="https://images.unsplash.com/photo-1682664175938-5545ce6605bc?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                src="/a-propos.png"
                 alt="L'intérieur de la boutique Binocles de la Save"
                 fill
                 className="object-cover"

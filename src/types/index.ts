@@ -81,6 +81,8 @@ export interface Rdv {
   statut: StatutRdv;
   raisonAnnulation?: string;
   notes?: string;
+  // Annulation client
+  cancelToken?: string;
   // Synchro Google
   googleEventId?: string;
   // Rappel

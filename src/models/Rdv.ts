@@ -27,6 +27,8 @@ const RdvSchema = new Schema<Rdv>(
     },
     raisonAnnulation: { type: String },
     notes: { type: String },
+    // Annulation client
+    cancelToken: { type: String, index: true, sparse: true },
     // Synchro Google
     googleEventId: { type: String },
     // Rappel

@@ -7,10 +7,10 @@ interface DashboardData {
   stats: {
     upcomingRdvCount: number;
     activeMarques: number;
-    monthContacts: number;
+    monthNouveautes: number;
     monthLensOrders: number;
   };
-  recentContacts: {
+  recentCommandes: {
     _id: string;
     nom: string;
     prenom: string;
@@ -39,26 +39,6 @@ const statConfig = [
     ),
   },
   {
-    key: "activeMarques" as const,
-    label: "Marques actives",
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
-    key: "monthContacts" as const,
-    label: "Formulaires ce mois",
-    icon: (
-      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.5" />
-        <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M9 12h6M9 16h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
     key: "monthLensOrders" as const,
     label: "Commandes ce mois",
     icon: (
@@ -66,6 +46,24 @@ const statConfig = [
         <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
         <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
         <path d="M12 5v2M12 17v2M5 12H3M21 12h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    key: "monthNouveautes" as const,
+    label: "Nouveautés ce mois",
+    icon: (
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    key: "activeMarques" as const,
+    label: "Marques actives",
+    icon: (
+      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+        <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
   },
@@ -148,7 +146,7 @@ export default function AdminDashboard() {
                   {stat.icon}
                 </div>
                 <div>
-                  <p className="text-2xl font-medium text-brown">{data.stats[stat.key]}</p>
+                  <p className="text-2xl font-medium text-brown">{data.stats[stat.key] ?? 0}</p>
                   <p className="text-xs text-brown/50">{stat.label}</p>
                 </div>
               </div>
@@ -157,30 +155,30 @@ export default function AdminDashboard() {
 
           {/* Recent activity */}
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Recent contacts */}
+            {/* Recent commandes */}
             <div className="bg-beige/70 border border-brown/10 rounded-2xl p-6">
               <h2 className="font-serif text-lg text-brown mb-4">
-                Derniers formulaires
+                Dernières commandes
               </h2>
-              {data.recentContacts.length === 0 ? (
-                <p className="text-brown/50 text-sm">Aucun formulaire récent</p>
+              {data.recentCommandes.length === 0 ? (
+                <p className="text-brown/50 text-sm">Aucune commande récente</p>
               ) : (
                 <div className="space-y-3">
-                  {data.recentContacts.map((contact) => (
+                  {data.recentCommandes.map((commande) => (
                     <div
-                      key={contact._id}
+                      key={commande._id}
                       className="flex items-center justify-between py-3 border-b border-brown/5 last:border-0"
                     >
                       <div>
                         <p className="text-sm text-brown">
-                          {contact.prenom} {contact.nom}
+                          {commande.prenom} {commande.nom}
                         </p>
                         <p className="text-xs text-brown/50 truncate max-w-[150px] sm:max-w-[200px]">
-                          {contact.message?.substring(0, 50)}...
+                          {commande.message?.substring(0, 50)}
                         </p>
                       </div>
                       <span className="text-xs text-brown/40">
-                        {new Date(contact.createdAt).toLocaleDateString("fr-FR", {
+                        {new Date(commande.createdAt).toLocaleDateString("fr-FR", {
                           day: "numeric",
                           month: "short",
                         })}

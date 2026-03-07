@@ -370,28 +370,21 @@ export default function RendezVousAdminPage() {
 										</div>
 									</div>
 
-									<button
-										onClick={(e) => {
-											e.stopPropagation();
-											if (rdv.statut === "confirme") {
-												handleEffectuer(rdv._id);
-											}
-										}}
-										disabled={rdv.statut !== "confirme"}
-										className={`px-3 py-1.5 rounded-lg text-xs transition-colors shrink-0 ${
+									<span
+										className={`px-3 py-1.5 rounded-lg text-xs shrink-0 ${
 											rdv.statut === "confirme"
-												? "bg-brown text-beige hover:bg-brown/90 active:bg-brown/80 cursor-pointer"
+												? "bg-amber-100 text-amber-700"
 												: rdv.statut === "effectue"
-													? "bg-brown/10 text-brown/50"
-													: "bg-brown/5 text-brown/30"
+													? "bg-green-100 text-green-700"
+													: "bg-brown/5 text-brown/40"
 										}`}
 									>
 										{rdv.statut === "confirme"
-											? "Confirmé"
+											? "À venir"
 											: rdv.statut === "effectue"
 												? "Effectué"
 												: "Annulé"}
-									</button>
+									</span>
 
 									<svg
 										className={`w-4 h-4 text-brown/30 transition-transform ${

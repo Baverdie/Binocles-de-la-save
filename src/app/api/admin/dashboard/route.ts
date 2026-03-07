@@ -4,6 +4,7 @@ import connectDB from "@/lib/db/mongodb";
 import ContactModel from "@/models/Contact";
 import RdvModel from "@/models/Rdv";
 import MarqueModel from "@/models/Marque";
+import AvantPremiereModel from "@/models/AvantPremiere";
 
 export async function GET() {
   try {
@@ -20,22 +21,22 @@ export async function GET() {
     const [
       upcomingRdvCount,
       activeMarques,
-      monthContacts,
+      monthNouveautes,
       monthLensOrders,
-      recentContacts,
+      recentCommandes,
       upcomingRdv,
     ] = await Promise.all([
       RdvModel.countDocuments({ dateRdv: { $gte: now }, statut: "confirme" }),
       MarqueModel.countDocuments({ actif: true }),
-      ContactModel.countDocuments({ createdAt: { $gte: startOfMonth }, type: "question" }),
+      AvantPremiereModel.countDocuments({ createdAt: { $gte: startOfMonth } }),
       ContactModel.countDocuments({ createdAt: { $gte: startOfMonth }, type: "lentilles" }),
-      ContactModel.find().sort({ createdAt: -1 }).limit(5).lean(),
+      ContactModel.find({ type: "lentilles" }).sort({ createdAt: -1 }).limit(5).lean(),
       RdvModel.find({ dateRdv: { $gte: now }, statut: "confirme" }).sort({ dateRdv: 1 }).limit(5).lean(),
     ]);
 
     return NextResponse.json({
-      stats: { upcomingRdvCount, activeMarques, monthContacts, monthLensOrders },
-      recentContacts: JSON.parse(JSON.stringify(recentContacts)),
+      stats: { upcomingRdvCount, activeMarques, monthNouveautes, monthLensOrders },
+      recentCommandes: JSON.parse(JSON.stringify(recentCommandes)),
       upcomingRdv: JSON.parse(JSON.stringify(upcomingRdv)),
     });
   } catch (error) {
