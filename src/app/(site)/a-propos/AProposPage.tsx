@@ -120,7 +120,7 @@ export default function AProposPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={storyInView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6 }}
-              className="relative aspect-[4/5] max-h-[50vh] sm:max-h-none rounded-2xl sm:rounded-3xl overflow-hidden"
+              className="relative aspect-4/5 max-h-[50vh] sm:max-h-none rounded-2xl sm:rounded-3xl overflow-hidden"
             >
               <Image
                 src="/a-propos.png"
@@ -129,7 +129,7 @@ export default function AProposPage() {
                 className="object-cover"
               />
               {/* Overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-brown/30 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-brown/30 to-transparent" />
             </motion.div>
 
             {/* Content */}

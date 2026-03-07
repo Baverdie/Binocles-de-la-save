@@ -173,7 +173,7 @@ export default function AdminDashboard() {
                         <p className="text-sm text-brown">
                           {commande.prenom} {commande.nom}
                         </p>
-                        <p className="text-xs text-brown/50 truncate max-w-[150px] sm:max-w-[200px]">
+                        <p className="text-xs text-brown/50 truncate max-w-37.5 sm:max-w-50">
                           {commande.message?.substring(0, 50)}
                         </p>
                       </div>
