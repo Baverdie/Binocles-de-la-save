@@ -218,9 +218,14 @@ export default function MarquesPage() {
                         {marque.nom}
                       </h2>
                       {marque.origine && (
-                        <span className="text-[10px] sm:text-xs text-beige/60 mb-2 sm:mb-3">
+                        <span className="text-[10px] sm:text-xs text-beige/60 mb-1">
                           {marque.origine}
                         </span>
+                      )}
+                      {marque.resume && (
+                        <p className="text-[9px] sm:text-[11px] text-beige/70 text-center leading-relaxed mb-2 sm:mb-3 px-1 line-clamp-3">
+                          {marque.resume}
+                        </p>
                       )}
                       {marque.tags && marque.tags.length > 0 && (
                         <div className="flex flex-wrap justify-center gap-1 sm:gap-1.5">

@@ -1,30 +1,36 @@
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth(async function middleware(request: NextRequest) {
+export default auth(function proxy(request) {
   const { pathname } = request.nextUrl;
   const hostname = request.headers.get("host") || "";
+
+  // Block unauthenticated access to /admin routes
+  if (pathname.startsWith("/admin") && !request.auth) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Redirect logged-in users away from login page
+  if (pathname === "/login" && request.auth) {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
 
   // Check if we're on the admin subdomain (production)
   const isAdminSubdomain = hostname.startsWith("admin.");
 
   // For admin subdomain: rewrite to /admin/* paths
   if (isAdminSubdomain) {
-    // Don't rewrite if already going to /admin or public routes
     if (
       !pathname.startsWith("/admin") &&
       !pathname.startsWith("/api/auth") &&
       !pathname.startsWith("/login")
     ) {
-      // Rewrite root to /admin
       if (pathname === "/") {
         return NextResponse.rewrite(new URL("/admin", request.url));
       }
-      // Rewrite other paths to /admin/*
       return NextResponse.rewrite(new URL(`/admin${pathname}`, request.url));
     }
   }
