@@ -480,7 +480,7 @@ export default function MarquesPage() {
                   )}
                 </div>
                 {marque.resume && (
-                  <p className="text-sm text-brown/50 truncate">
+                  <p className="text-sm text-brown/50 truncate max-w-[50vw]">
                     {marque.resume}
                   </p>
                 )}
