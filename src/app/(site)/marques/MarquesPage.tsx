@@ -392,7 +392,7 @@ export default function MarquesPage() {
                             {selectedMarque.images.map((img, idx) => (
                               <div
                                 key={idx}
-                                className="relative aspect-[4/3] rounded-xl sm:rounded-2xl overflow-hidden bg-brown/5"
+                                className="relative aspect-4/3 rounded-xl sm:rounded-2xl overflow-hidden bg-brown/5"
                               >
                                 <Image
                                   src={img}
