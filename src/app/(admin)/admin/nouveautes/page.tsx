@@ -291,7 +291,7 @@ export default function NouveautesAdminPage() {
 								{/* Info */}
 								<div className="flex-1 min-w-0">
 									<div className="flex items-center gap-2 mb-1">
-										<h3 className="font-medium text-brown truncate">{item.titre}</h3>
+										<h3 className="font-medium text-brown truncate max-w-[50vw]">{item.titre}</h3>
 										<span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${statut.color}`}>
 											{statut.label}
 										</span>
