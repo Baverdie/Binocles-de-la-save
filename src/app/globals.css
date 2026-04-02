@@ -1,0 +1,105 @@
+@font-face {
+  font-family: "Optician Sans";
+  src: url(/fonts/Optician-Sans.otf) format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+
+:root {
+  /* Couleurs principales */
+  --beige: #E7DAC6;
+  --brown: #412A1C;
+  --white: #ffffff;
+  --black: #171717;
+  --accent: #C48F50;
+
+  /* Couleurs du thème */
+  --background: var(--beige);
+  --foreground: var(--brown);
+}
+
+@theme inline {
+  /* Couleurs */
+  --color-beige: var(--beige);
+  --color-brown: var(--brown);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Fonts */
+  --font-serif: "Outfit", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+/* Base styles */
+body {
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Typography utilities */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-optician {
+  font-family: "Optician Sans", var(--font-sans);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--brown);
+}
+
+/* Selection color */
+::selection {
+  background: var(--brown);
+  color: var(--beige);
+}
+
+/* Performance optimizations for mobile animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* GPU acceleration for animated elements */
+.will-change-transform {
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Optimize touch interactions on mobile */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Touch feedback: buttons and links get a press-in effect */
+  /* Use `scale` (individual transform) to avoid overriding Framer Motion's `transform` inline styles */
+  button:not(:disabled):active,
+  a[href]:active,
+  [role="button"]:active {
+    scale: 0.97;
+  }
+
+  /* Subtler press for larger cards and rows */
+  [draggable="true"]:active {
+    scale: 0.99;
+  }
+}
