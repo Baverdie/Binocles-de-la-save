@@ -43,8 +43,12 @@ export async function POST(request: NextRequest) {
       buffer = await processLogoImage(buffer);
       fileExt = "png";
       contentType = "image/png";
-    } else if (folder === "marques/gallery" || folder === "nouveautes") {
+    } else if (folder === "marques/gallery") {
       buffer = await optimizeGalleryImage(buffer);
+      fileExt = "webp";
+      contentType = "image/webp";
+    } else if (folder === "nouveautes") {
+      buffer = await optimizeGalleryImage(buffer, 1600);
       fileExt = "webp";
       contentType = "image/webp";
     }

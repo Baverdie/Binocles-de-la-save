@@ -19,7 +19,6 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 			.raw()
 			.toBuffer({ resolveWithObject: true });
 
-		// Suppression fond blanc par seuillage (R, G, B > 240 → transparent)
 		for (let i = 0; i < data.length; i += 4) {
 			const r = data[i];
 			const g = data[i + 1];
@@ -56,11 +55,8 @@ export async function optimizeGalleryImage(
 ): Promise<Buffer> {
 	try {
 		return await sharp(buffer)
-			.resize(maxWidth, 600, {
-				fit: "inside",
-				withoutEnlargement: true,
-			})
-			.webp({ quality: 80 })
+			.resize({ width: maxWidth, withoutEnlargement: true })
+			.webp({ quality: 85 })
 			.toBuffer();
 	} catch (error) {
 		console.error("[ImageProcessing] Erreur optimisation galerie:", error);

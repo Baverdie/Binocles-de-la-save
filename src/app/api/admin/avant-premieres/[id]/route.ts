@@ -15,18 +15,17 @@ export async function PUT(
 
 		const { id } = await params;
 		const body = await request.json();
-		const { titre, description, images, dateDebut, actif } = body;
+		const { titre, description, image, dateDebut, actif } = body;
 
-		if (!titre || !images?.length || !dateDebut) {
+		if (!titre || !image || !dateDebut) {
 			return NextResponse.json(
-				{ error: "Titre, au moins une image et une date de début sont requis" },
+				{ error: "Titre, une image et une date de début sont requis" },
 				{ status: 400 }
 			);
 		}
 
 		await connectDB();
 
-		// Date de fin = dateDebut + 1 mois + 1 jour
 		const debut = new Date(dateDebut);
 		const fin = new Date(debut);
 		fin.setMonth(fin.getMonth() + 1);
@@ -37,7 +36,7 @@ export async function PUT(
 			{
 				titre,
 				description: description || undefined,
-				images,
+				image,
 				dateDebut: debut,
 				dateFin: fin,
 				actif,

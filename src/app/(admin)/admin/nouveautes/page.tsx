@@ -7,7 +7,7 @@ interface AvantPremiere {
 	_id: string;
 	titre: string;
 	description?: string;
-	images: string[];
+	image: string;
 	dateDebut: string;
 	dateFin: string;
 	actif: boolean;
@@ -18,7 +18,7 @@ interface AvantPremiere {
 const defaultForm = {
 	titre: "",
 	description: "",
-	images: [] as string[],
+	image: "",
 	dateDebut: "",
 	actif: true,
 };
@@ -41,7 +41,7 @@ export default function NouveautesAdminPage() {
 	const closeForm = useCallback(() => {
 		setShowForm(false);
 		setEditing(null);
-		setFormData({ ...defaultForm, images: [] });
+		setFormData({ ...defaultForm });
 		setError("");
 	}, []);
 
@@ -69,7 +69,7 @@ export default function NouveautesAdminPage() {
 
 	function openCreate() {
 		setEditing(null);
-		setFormData({ ...defaultForm, images: [] });
+		setFormData({ ...defaultForm });
 		setError("");
 		setShowForm(true);
 	}
@@ -79,7 +79,7 @@ export default function NouveautesAdminPage() {
 		setFormData({
 			titre: item.titre,
 			description: item.description || "",
-			images: [...item.images],
+			image: item.image,
 			dateDebut: item.dateDebut.slice(0, 10),
 			actif: item.actif,
 		});
@@ -88,45 +88,28 @@ export default function NouveautesAdminPage() {
 	}
 
 	async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-		const files = e.target.files;
-		if (!files?.length) return;
-
-		const remaining = 5 - formData.images.length;
-		if (remaining <= 0) {
-			setError("Maximum 5 images");
-			return;
-		}
+		const file = e.target.files?.[0];
+		if (!file) return;
 
 		setUploading(true);
 		setError("");
 
-		const filesToUpload = Array.from(files).slice(0, remaining);
+		try {
+			const fd = new FormData();
+			fd.append("file", file);
+			fd.append("folder", "nouveautes");
 
-		for (const file of filesToUpload) {
-			try {
-				const fd = new FormData();
-				fd.append("file", file);
-				fd.append("folder", "nouveautes");
+			const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+			if (!res.ok) throw new Error("Erreur upload");
 
-				const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-				if (!res.ok) throw new Error("Erreur upload");
-
-				const { path } = await res.json();
-				setFormData((prev) => ({ ...prev, images: [...prev.images, path] }));
-			} catch {
-				setError("Erreur lors de l'upload d'une image");
-			}
+			const { path } = await res.json();
+			setFormData((prev) => ({ ...prev, image: path }));
+		} catch {
+			setError("Erreur lors de l'upload de l'image");
 		}
 
 		setUploading(false);
 		if (fileInputRef.current) fileInputRef.current.value = "";
-	}
-
-	function removeImage(index: number) {
-		setFormData((prev) => ({
-			...prev,
-			images: prev.images.filter((_, i) => i !== index),
-		}));
 	}
 
 	async function handleSubmit(e: React.FormEvent) {
@@ -135,8 +118,8 @@ export default function NouveautesAdminPage() {
 			setError("Le titre est requis");
 			return;
 		}
-		if (formData.images.length === 0) {
-			setError("Au moins une image est requise");
+		if (!formData.image) {
+			setError("Une image est requise");
 			return;
 		}
 		if (!formData.dateDebut) {
@@ -156,7 +139,13 @@ export default function NouveautesAdminPage() {
 			const res = await fetch(url, {
 				method,
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(formData),
+				body: JSON.stringify({
+					titre: formData.titre,
+					description: formData.description,
+					image: formData.image,
+					dateDebut: formData.dateDebut,
+					actif: formData.actif,
+				}),
 			});
 
 			if (!res.ok) {
@@ -185,7 +174,7 @@ export default function NouveautesAdminPage() {
 				body: JSON.stringify({
 					titre: item.titre,
 					description: item.description,
-					images: item.images,
+					image: item.image,
 					dateDebut: item.dateDebut,
 					actif: !item.actif,
 				}),
@@ -272,16 +261,13 @@ export default function NouveautesAdminPage() {
 								className="rounded-2xl border border-brown/10 bg-beige/70 p-4 flex gap-4 items-start"
 							>
 								<div className="relative w-32 h-20 rounded-xl overflow-hidden bg-brown/5 shrink-0">
-									<Image
-										src={item.images[0]}
-										alt={item.titre}
-										fill
-										className="object-cover"
-									/>
-									{item.images.length > 1 && (
-										<span className="absolute bottom-1 right-1 bg-brown/70 text-beige text-[10px] px-1.5 py-0.5 rounded-full">
-											{item.images.length}
-										</span>
+									{item.image && (
+										<Image
+											src={item.image}
+											alt={item.titre}
+											fill
+											className="object-cover"
+										/>
 									)}
 								</div>
 
@@ -391,46 +377,24 @@ export default function NouveautesAdminPage() {
 							</div>
 
 							<div>
-								<label className="block text-xs text-brown/60 mb-2">
-									Images ({formData.images.length}/5)
-								</label>
-								<div className="flex flex-wrap gap-2 mb-2">
-									{formData.images.map((img, i) => (
-										<div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden group">
-											<Image src={img} alt="" fill className="object-cover" />
-											<button
-												type="button"
-												onClick={() => removeImage(i)}
-												className="absolute inset-0 bg-brown/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
-											>
-												<svg className="w-5 h-5 text-beige" viewBox="0 0 24 24" fill="none">
-													<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-												</svg>
-											</button>
-										</div>
-									))}
-									{formData.images.length < 5 && (
-										<button
-											type="button"
-											onClick={() => fileInputRef.current?.click()}
-											disabled={uploading}
-											className="w-20 h-20 rounded-lg border-2 border-dashed border-brown/20 flex items-center justify-center text-brown/30 hover:text-brown/50 hover:border-brown/40 transition-colors cursor-pointer"
-										>
-											{uploading ? (
-												<span className="text-xs animate-pulse">...</span>
-											) : (
-												<svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-													<path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-												</svg>
-											)}
-										</button>
-									)}
-								</div>
+								<label className="block text-xs text-brown/60 mb-2">Image</label>
+								{formData.image && (
+									<div className="relative w-full h-40 rounded-xl overflow-hidden mb-2">
+										<Image src={formData.image} alt="" fill className="object-cover" />
+									</div>
+								)}
+								<button
+									type="button"
+									onClick={() => fileInputRef.current?.click()}
+									disabled={uploading}
+									className="w-full py-2.5 rounded-xl border border-brown/20 text-xs text-brown/50 hover:text-brown hover:border-brown/40 transition-colors cursor-pointer"
+								>
+									{uploading ? "Upload en cours..." : formData.image ? "Changer l'image" : "Choisir une image"}
+								</button>
 								<input
 									ref={fileInputRef}
 									type="file"
 									accept="image/*"
-									multiple
 									onChange={handleUpload}
 									className="hidden"
 								/>

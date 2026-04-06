@@ -20,7 +20,7 @@ export interface AvantPremiere {
   _id: string;
   titre: string;
   description?: string;
-  images: string[];
+  image: string;
   dateDebut: Date;
   dateFin: Date;
   actif: boolean;

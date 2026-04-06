@@ -104,13 +104,14 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
             }
             className="nouveautes-swiper"
           >
-            {nouveautes.map((nouveaute) => (
+            {nouveautes.filter((n) => n.image).map((nouveaute) => (
               <SwiperSlide key={nouveaute._id}>
                 <div className="group relative aspect-[4/3] sm:aspect-video md:aspect-21/9 w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-brown">
                   <Image
-                    src={nouveaute.images[0]}
+                    src={nouveaute.image}
                     alt={nouveaute.titre}
                     fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1024px"
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-brown via-brown/50 to-transparent" />
@@ -129,14 +130,6 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
                       {formatDate(nouveaute.dateFin)}
                     </p>
                   </div>
-
-                  {nouveaute.images.length > 1 && (
-                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-brown/60 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full">
-                      <span className="text-beige/80 text-[10px] sm:text-xs">
-                        {nouveaute.images.length} images
-                      </span>
-                    </div>
-                  )}
                 </div>
               </SwiperSlide>
             ))}
