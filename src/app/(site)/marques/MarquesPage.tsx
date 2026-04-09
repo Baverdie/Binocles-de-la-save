@@ -62,35 +62,36 @@ export default function MarquesPage() {
   }, [selectedMarque, isModalAnimating, isClosing]);
 
   useEffect(() => {
-    if (selectedMarque) {
-      setIsModalAnimating(true);
-      // Prevent layout shift from scrollbar disappearing
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = "hidden";
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-      // Reset cursor state when modal closes
-      setIsHoveringCard(false);
-      setIsModalAnimating(false);
-    }
     return () => {
       document.body.style.overflow = "";
       document.body.style.paddingRight = "";
     };
-  }, [selectedMarque]);
+  }, []);
 
-  // Reset isClosing flag after animation completes
   useEffect(() => {
     if (!selectedMarque && isClosing) {
       const timeout = setTimeout(() => {
         setIsClosing(false);
-      }, 500); // Durée de l'animation spring
-
+      }, 500);
       return () => clearTimeout(timeout);
     }
   }, [selectedMarque, isClosing]);
+
+  function openModal(marque: Marque) {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    setIsModalAnimating(true);
+    setSelectedMarque(marque);
+  }
+
+  function closeModal() {
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
+    setIsClosing(true);
+    setSelectedMarque(null);
+    setIsHoveringCard(false);
+  }
 
   if (loading) {
     return (
@@ -176,16 +177,14 @@ export default function MarquesPage() {
                 >
                   <motion.div
                     layoutId={`card-${marque._id}`}
-                    onClick={() => {
-                      setIsModalAnimating(true);
-                      setSelectedMarque(marque);
-                    }}
+                    onClick={() => openModal(marque)}
                     onMouseEnter={() => !isModalAnimating && setIsHoveringCard(true)}
                     onMouseLeave={() => !isModalAnimating && setIsHoveringCard(false)}
                     className="relative aspect-square bg-beige rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer lg:cursor-none"
                     style={{ originX: 0.5, originY: 0.5 }}
                     whileHover={{ y: -4 }}
-                    transition={{ duration: 0.2 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ layout: { type: "spring", damping: 30, stiffness: 300 }, default: { duration: 0.2 } }}
                   >
                     <motion.div
                       layoutId={`logo-${marque._id}`}
@@ -252,11 +251,7 @@ export default function MarquesPage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  onClick={() => {
-                    setIsClosing(true);
-                    setSelectedMarque(null);
-                    setIsHoveringCard(false);
-                  }}
+                  onClick={closeModal}
                   className="fixed inset-0 bg-brown/20 backdrop-blur-sm z-40"
                   key="backdrop"
                 />
@@ -280,11 +275,7 @@ export default function MarquesPage() {
                   >
                     <div className="px-4 sm:px-6 md:px-10 lg:px-16 py-3 sm:py-4">
                       <button
-                        onClick={() => {
-                          setIsClosing(true);
-                          setSelectedMarque(null);
-                          setIsHoveringCard(false);
-                        }}
+                        onClick={closeModal}
                         className="flex items-center gap-2 text-brown bg-brown/10 sm:bg-transparent px-3 py-2 sm:px-3 sm:py-1.5 rounded-full hover:bg-brown/10 transition-all duration-300"
                       >
                         <svg width="20" height="20" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none">
