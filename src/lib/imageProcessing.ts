@@ -2,20 +2,18 @@ import sharp from "sharp";
 
 export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 	try {
-		let image = sharp(buffer);
-		const metadata = await image.metadata();
+		const metadata = await sharp(buffer).metadata();
 
 		if (metadata.format === "svg") {
-			return await sharp(buffer).png({ quality: 90 }).toBuffer();
+			return await sharp(buffer, { density: 300 })
+				.resize({ width: 800 })
+				.webp({ quality: 90, effort: 6 })
+				.toBuffer();
 		}
-
-		await image
-			.ensureAlpha()
-			.toColorspace("srgb")
-			.toBuffer({ resolveWithObject: true });
 
 		const { data, info } = await sharp(buffer)
 			.ensureAlpha()
+			.toColorspace("srgb")
 			.raw()
 			.toBuffer({ resolveWithObject: true });
 
@@ -23,26 +21,17 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 			const r = data[i];
 			const g = data[i + 1];
 			const b = data[i + 2];
-
 			if (r > 240 && g > 240 && b > 240) {
 				data[i + 3] = 0;
 			}
 		}
 
-		let result = sharp(data, {
-			raw: {
-				width: info.width,
-				height: info.height,
-				channels: 4,
-			},
+		return await sharp(data, {
+			raw: { width: info.width, height: info.height, channels: 4 },
 		})
-			.resize(400, 300, {
-				fit: "inside",
-				withoutEnlargement: true,
-			})
-			.png({ quality: 90 });
-
-		return await result.toBuffer();
+			.resize({ width: 800, withoutEnlargement: true })
+			.webp({ quality: 90, effort: 6 })
+			.toBuffer();
 	} catch (error) {
 		console.error("[ImageProcessing] Erreur traitement logo:", error);
 		return buffer;
@@ -51,12 +40,12 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 
 export async function optimizeGalleryImage(
 	buffer: Buffer,
-	maxWidth: number = 800
+	maxWidth: number = 1200
 ): Promise<Buffer> {
 	try {
 		return await sharp(buffer)
 			.resize({ width: maxWidth, withoutEnlargement: true })
-			.webp({ quality: 85 })
+			.webp({ quality: 85, effort: 5 })
 			.toBuffer();
 	} catch (error) {
 		console.error("[ImageProcessing] Erreur optimisation galerie:", error);

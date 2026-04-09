@@ -193,8 +193,9 @@ export default function MarquesPage() {
                       <Image
                         src={marque.logo}
                         alt={marque.nom}
-                        width={160}
-                        height={80}
+                        width={800}
+                        height={400}
+                        sizes="(max-width: 640px) 150px, (max-width: 1024px) 200px, 250px"
                         className="w-full h-auto max-h-12 sm:max-h-20 object-contain"
                         style={{
                           filter: "brightness(0) saturate(100%) invert(16%) sepia(27%) saturate(642%) hue-rotate(347deg) brightness(92%) contrast(92%)"
@@ -309,8 +310,9 @@ export default function MarquesPage() {
                           <Image
                             src={selectedMarque.logo}
                             alt={selectedMarque.nom}
-                            width={200}
-                            height={100}
+                            width={800}
+                            height={400}
+                            sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 192px"
                             className="w-full h-full object-contain object-left"
                             style={{
                               filter: "brightness(0) saturate(100%) invert(16%) sepia(27%) saturate(642%) hue-rotate(347deg) brightness(92%) contrast(92%)"

@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
 
     if (folder === "marques") {
       buffer = await processLogoImage(buffer);
-      fileExt = "png";
-      contentType = "image/png";
+      fileExt = "webp";
+      contentType = "image/webp";
     } else if (folder === "marques/gallery") {
       buffer = await optimizeGalleryImage(buffer);
       fileExt = "webp";
