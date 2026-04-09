@@ -38,7 +38,7 @@ export async function envoyerEmail({ to, subject, html, attachments = [] }: Emai
       : html,
     attachments: attachments.map((a) => ({
       filename: a.filename,
-      content: a.content instanceof Buffer ? a.content : Buffer.from(a.content, "base64"),
+      content: a.content instanceof Buffer ? a.content : Buffer.from(a.content as string, "base64"),
     })),
   });
 
