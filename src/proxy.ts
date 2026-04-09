@@ -27,7 +27,7 @@ export default auth(function middleware(request) {
 
     if (
       !pathname.startsWith("/admin") &&
-      !pathname.startsWith("/api/auth") &&
+      !pathname.startsWith("/api") &&
       !pathname.startsWith("/login")
     ) {
       if (pathname === "/") {
