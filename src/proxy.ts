@@ -10,11 +10,14 @@ export default auth(function middleware(request) {
   const isAdminSubdomain = hostname.startsWith("admin.");
 
   if (!isAdminSubdomain && pathname.startsWith("/admin")) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
   if (isAdminSubdomain) {
-    if (pathname.startsWith("/admin") && !request.auth) {
+    const isPublicPath =
+      pathname.startsWith("/api/auth") || pathname === "/login";
+
+    if (!isPublicPath && !request.auth) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
