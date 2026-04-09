@@ -22,7 +22,7 @@ export default auth(function middleware(request) {
     }
 
     if (pathname === "/login" && request.auth) {
-      return NextResponse.redirect(new URL("/admin", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
     if (

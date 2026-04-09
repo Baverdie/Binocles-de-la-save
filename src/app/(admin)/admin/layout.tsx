@@ -8,7 +8,8 @@ import { usePathname } from "next/navigation";
 const navItems = [
   {
     label: "Dashboard",
-    href: "/admin",
+    href: "/",
+    exact: true,
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
@@ -20,7 +21,7 @@ const navItems = [
   },
   {
     label: "Marques",
-    href: "/admin/marques",
+    href: "/marques",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -29,7 +30,7 @@ const navItems = [
   },
   {
     label: "Nouveautés",
-    href: "/admin/nouveautes",
+    href: "/nouveautes",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -38,7 +39,7 @@ const navItems = [
   },
   {
     label: "Horaires",
-    href: "/admin/horaires",
+    href: "/horaires",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
@@ -54,7 +55,7 @@ const navItems = [
   },
   {
     label: "Commandes",
-    href: "/admin/formulaires",
+    href: "/formulaires",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="currentColor" strokeWidth="1.5" />
@@ -65,7 +66,7 @@ const navItems = [
   },
   {
     label: "Rendez-vous",
-    href: "/admin/rendez-vous",
+    href: "/rendez-vous",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -75,7 +76,7 @@ const navItems = [
   },
   {
     label: "FAQ",
-    href: "/admin/faq",
+    href: "/faq",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
@@ -86,7 +87,7 @@ const navItems = [
   },
   {
     label: "Administrateurs",
-    href: "/admin/utilisateurs",
+    href: "/utilisateurs",
     icon: (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
@@ -113,8 +114,9 @@ export default function AdminDashboardLayout({
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href ||
-            (item.href !== "/admin" && pathname.startsWith(item.href));
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
 
           return (
             <Link
@@ -133,9 +135,9 @@ export default function AdminDashboardLayout({
         })}
         {session?.user?.name?.toLowerCase().includes("baverdie") && (
           <Link
-            href="/admin/test-email"
+            href="/test-email"
             onClick={() => setSidebarOpen(false)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${pathname === "/admin/test-email"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${pathname === "/test-email"
               ? "bg-beige/10 text-beige"
               : "text-beige/60 hover:text-beige hover:bg-beige/5 active:bg-beige/10"
               }`}
@@ -160,7 +162,7 @@ export default function AdminDashboardLayout({
           </div>
         </div>
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => signOut({ callbackUrl: `${window.location.origin}/login` })}
           className="w-full mt-2 flex items-center gap-3 px-4 py-2 rounded-xl text-sm text-beige/60 hover:text-beige hover:bg-beige/5 active:bg-beige/10 transition-colors cursor-pointer"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">

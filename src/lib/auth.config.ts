@@ -21,12 +21,11 @@ export const authConfig: NextAuthConfig = {
 
       if (isOnAdmin) {
         if (isLoggedIn) return true;
-        return false; // Redirect to login
+        return false;
       }
 
-      // Redirect logged-in users away from login page
       if (isOnLogin && isLoggedIn) {
-        return Response.redirect(new URL("/admin", nextUrl));
+        return Response.redirect(new URL("/", nextUrl));
       }
 
       return true;
