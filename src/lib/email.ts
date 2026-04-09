@@ -1,15 +1,8 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import connectDB from "@/lib/db/mongodb";
 import ConfigTestModel from "@/models/ConfigTest";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface EmailOptions {
   to: string;
@@ -36,24 +29,26 @@ export async function envoyerEmail({ to, subject, html, attachments = [] }: Emai
   const redirection = await getEmailRedirection();
   const destinataire = redirection || to;
 
-  const mailOptions = {
-    from: `"Binocles de la Save" <${process.env.SMTP_FROM || "contact@binoclesdelasave.fr"}>`,
+  const { data, error } = await resend.emails.send({
+    from: `Binocles de la Save <${process.env.RESEND_FROM || "contact@binoclesdelasave.fr"}>`,
     to: destinataire,
     subject: redirection ? `[TEST] ${subject}` : subject,
     html: redirection
       ? `<div style="background:#fef3c7;padding:10px;margin-bottom:15px;border-radius:8px;font-size:12px;color:#92400e;"><strong>MODE TEST</strong> — Email original destiné à : ${to}</div>${html}`
       : html,
-    attachments,
-  };
+    attachments: attachments.map((a) => ({
+      filename: a.filename,
+      content: a.content instanceof Buffer ? a.content : Buffer.from(a.content, "base64"),
+    })),
+  });
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Email envoyé${redirection ? " [TEST → " + destinataire + "]" : ""}:`, info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
+  if (error) {
     console.error("Erreur envoi email:", error);
-    throw error;
+    throw new Error(error.message);
   }
+
+  console.log(`Email envoyé${redirection ? " [TEST → " + destinataire + "]" : ""}:`, data?.id);
+  return { success: true, messageId: data?.id };
 }
 
 // ==================== Design System Email ====================
