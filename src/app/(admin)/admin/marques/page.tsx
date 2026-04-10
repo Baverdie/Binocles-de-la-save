@@ -43,6 +43,7 @@ export default function MarquesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const mouseDownTargetRef = useRef<EventTarget | null>(null);
 
   useEffect(() => {
     fetchMarques();
@@ -568,7 +569,8 @@ export default function MarquesPage() {
       {showForm && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={closeForm}
+          onMouseDown={(e) => { mouseDownTargetRef.current = e.target; }}
+          onClick={(e) => { if (mouseDownTargetRef.current === e.currentTarget) closeForm(); }}
         >
           <div
             className="bg-beige border border-brown/30 rounded-2xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto shadow-lg"
