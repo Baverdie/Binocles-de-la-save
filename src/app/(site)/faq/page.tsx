@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import FAQPage from "./FAQPage";
+import BreadcrumbJsonLd from "@/components/ui/BreadcrumbJsonLd";
 import connectDB from "@/lib/db/mongodb";
 import FAQModel from "@/models/FAQ";
 
@@ -43,6 +44,7 @@ export default async function Page() {
 
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "FAQ", path: "/faq" }]} />
       {faqSchema && (
         <script
           type="application/ld+json"

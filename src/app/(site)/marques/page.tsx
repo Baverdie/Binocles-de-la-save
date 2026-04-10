@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import MarquesPage from "./MarquesPage";
+import BreadcrumbJsonLd from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Nos Marques",
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <MarquesPage />;
+  return (
+    <>
+      <BreadcrumbJsonLd items={[{ name: "Nos Marques", path: "/marques" }]} />
+      <MarquesPage />
+    </>
+  );
 }

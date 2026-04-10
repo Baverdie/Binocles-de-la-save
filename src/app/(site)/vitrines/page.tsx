@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import VitrinePage from "./VitrinePage";
+import BreadcrumbJsonLd from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Nos Vitrines",
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <VitrinePage />;
+  return (
+    <>
+      <BreadcrumbJsonLd items={[{ name: "Nos Vitrines", path: "/vitrines" }]} />
+      <VitrinePage />
+    </>
+  );
 }

@@ -27,7 +27,9 @@ import connectDB from "@/lib/db/mongodb";
 import VacancesModel from "@/models/Vacances";
 import FermetureModel from "@/models/Fermeture";
 import AvantPremiereModel from "@/models/AvantPremiere";
+import HoraireModel from "@/models/Horaire";
 import { getGoogleReviews } from "@/lib/google-reviews";
+import type { Horaire } from "@/types";
 
 export type ProchainEvenement = {
   type: "vacances" | "fermeture";
@@ -84,6 +86,22 @@ async function getProchainEvenement(): Promise<ProchainEvenement | undefined> {
   return undefined;
 }
 
+const SCHEMA_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+// Convertit les horaires DB en openingHoursSpecification schema.org
+function buildOpeningHours(horaires: Horaire[]) {
+  const specs: { "@type": string; dayOfWeek: string; opens: string; closes: string }[] = [];
+  for (const h of horaires) {
+    if (!h.ouvert) continue;
+    const day = SCHEMA_DAYS[h.jour];
+    if (h.matin?.debut && h.matin?.fin)
+      specs.push({ "@type": "OpeningHoursSpecification", dayOfWeek: day, opens: h.matin.debut, closes: h.matin.fin });
+    if (h.aprem?.debut && h.aprem?.fin)
+      specs.push({ "@type": "OpeningHoursSpecification", dayOfWeek: day, opens: h.aprem.debut, closes: h.aprem.fin });
+  }
+  return specs;
+}
+
 async function getNouveautes() {
   await connectDB();
   const now = new Date();
@@ -97,11 +115,18 @@ async function getNouveautes() {
   return JSON.parse(JSON.stringify(nouveautes));
 }
 
+async function getHoraires(): Promise<Horaire[]> {
+  await connectDB();
+  const horaires = await HoraireModel.find().sort({ jour: 1 }).lean();
+  return JSON.parse(JSON.stringify(horaires));
+}
+
 export default async function HomePage() {
-  const [prochainEvenement, nouveautes, googleReviews] = await Promise.all([
+  const [prochainEvenement, nouveautes, googleReviews, horaires] = await Promise.all([
     getProchainEvenement(),
     getNouveautes(),
     getGoogleReviews(),
+    getHoraires(),
   ]);
 
   const jsonLd = {
@@ -124,11 +149,7 @@ export default async function HomePage() {
       latitude: 43.6745,
       longitude: 1.2418,
     },
-    openingHoursSpecification: [
-      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:30", closes: "12:30" },
-      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"], opens: "14:00", closes: "18:30" },
-      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "09:30", closes: "12:30" },
-    ],
+    openingHoursSpecification: buildOpeningHours(horaires),
     sameAs: [
       "https://www.facebook.com/p/Binocles-de-la-Save-100087063979921/",
     ],

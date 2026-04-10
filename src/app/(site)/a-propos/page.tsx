@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AProposPage from "./AProposPage";
+import BreadcrumbJsonLd from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -13,5 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <AProposPage />;
+  return (
+    <>
+      <BreadcrumbJsonLd items={[{ name: "À propos", path: "/a-propos" }]} />
+      <AProposPage />
+    </>
+  );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import ContactPage from "./ContactPage";
+import BreadcrumbJsonLd from "@/components/ui/BreadcrumbJsonLd";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -15,8 +16,11 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-beige" />}>
-      <ContactPage />
-    </Suspense>
+    <>
+      <BreadcrumbJsonLd items={[{ name: "Contact", path: "/contact" }]} />
+      <Suspense fallback={<div className="min-h-screen bg-beige" />}>
+        <ContactPage />
+      </Suspense>
+    </>
   );
 }
