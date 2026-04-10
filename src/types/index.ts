@@ -15,6 +15,19 @@ export interface Marque {
   updatedAt: Date;
 }
 
+// ==================== Vitrine ====================
+export interface Vitrine {
+  _id: string;
+  titre: string;
+  description?: string;
+  image: string;
+  date: Date;
+  actif: boolean;
+  ordre: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // ==================== En Avant-Première ====================
 export interface AvantPremiere {
   _id: string;

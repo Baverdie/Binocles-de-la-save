@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       buffer = await optimizeGalleryImage(buffer);
       fileExt = "webp";
       contentType = "image/webp";
-    } else if (folder === "nouveautes") {
+    } else if (folder === "nouveautes" || folder === "vitrines") {
       buffer = await optimizeGalleryImage(buffer, 1600);
       fileExt = "webp";
       contentType = "image/webp";

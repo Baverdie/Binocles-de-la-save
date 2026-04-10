@@ -1,4 +1,5 @@
 export { default as MarqueModel } from "./Marque";
+export { default as VitrineModel } from "./Vitrine";
 export { default as AvantPremiereModel } from "./AvantPremiere";
 export { default as ArticleModel } from "./Article";
 export { default as ContactModel } from "./Contact";

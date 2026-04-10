@@ -29,6 +29,16 @@ const navItems = [
     ),
   },
   {
+    label: "Vitrines",
+    href: "/vitrines",
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     label: "Nouveautés",
     href: "/nouveautes",
     icon: (
