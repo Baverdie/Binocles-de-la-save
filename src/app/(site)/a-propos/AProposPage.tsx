@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
+const photos = ["/a-propos.png", "/image.png"];
 
 const valeurs = [
   {
@@ -57,6 +59,14 @@ const valeurs = [
 export default function AProposPage() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [photoIndex, setPhotoIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhotoIndex((i) => (i + 1) % photos.length);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const storyRef = useRef(null);
   const storyInView = useInView(storyRef, { once: true, margin: "-100px" });
@@ -118,12 +128,16 @@ export default function AProposPage() {
               transition={{ duration: 0.6 }}
               className="relative aspect-4/5 max-h-[50vh] sm:max-h-none rounded-2xl sm:rounded-3xl overflow-hidden"
             >
-              <Image
-                src="/a-propos.png"
-                alt="L'intérieur de la boutique Binocles de la Save"
-                fill
-                className="object-cover"
-              />
+              {photos.map((src, i) => (
+                <Image
+                  key={src}
+                  src={src}
+                  alt="L'intérieur de la boutique Binocles de la Save"
+                  fill
+                  className="object-cover transition-opacity duration-1000"
+                  style={{ opacity: i === photoIndex ? 1 : 0 }}
+                />
+              ))}
               <div className="absolute inset-0 bg-linear-to-t from-brown/30 to-transparent" />
             </motion.div>
 
