@@ -41,7 +41,6 @@ export default function UtilisateursPage() {
 		fetchAdmins();
 	}, []);
 
-	// Toast depuis les query params (retour OAuth)
 	useEffect(() => {
 		const calendarStatus = searchParams.get("calendar");
 		if (calendarStatus && CALENDAR_MESSAGES[calendarStatus]) {

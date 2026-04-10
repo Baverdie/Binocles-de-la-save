@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const photos = ["/a-propos.png", "/image.png"];
+const photos = ["/a-propos.webp", "/a-propos2.webp"];
 
 const valeurs = [
   {
@@ -139,6 +139,33 @@ export default function AProposPage() {
                 />
               ))}
               <div className="absolute inset-0 bg-linear-to-t from-brown/30 to-transparent" />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 items-center">
+                {photos.map((_, i) => {
+                  const isActive = i === photoIndex;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setPhotoIndex(i)}
+                      className="cursor-pointer flex items-center"
+                    >
+                      <motion.div
+                        className="h-2 rounded-full bg-beige/20 overflow-hidden"
+                        animate={{ width: isActive ? 40 : 8 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                      >
+                        <motion.div
+                          key={isActive ? `fill-active-${photoIndex}` : `fill-inactive-${i}`}
+                          className="h-full w-full rounded-full bg-beige"
+                          initial={{ scaleX: isActive ? 0 : 1 }}
+                          animate={{ scaleX: 1 }}
+                          transition={isActive ? { duration: 10, ease: "linear" } : { duration: 0 }}
+                          style={{ transformOrigin: "left", opacity: isActive ? 1 : 0.5 }}
+                        />
+                      </motion.div>
+                    </button>
+                  );
+                })}
+              </div>
             </motion.div>
 
             <motion.div

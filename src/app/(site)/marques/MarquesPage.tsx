@@ -52,7 +52,6 @@ export default function MarquesPage() {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Only update cursor position when modal is not open and not closing
       if (!selectedMarque && !isModalAnimating && !isClosing) {
         setCursorPos({ x: e.clientX, y: e.clientY });
       }

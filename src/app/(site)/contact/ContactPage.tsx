@@ -58,7 +58,6 @@ export default function ContactPage() {
 
   const [view, setView] = useState<View>("hub");
 
-  // Handle query param for direct access
   useEffect(() => {
     const vueParam = searchParams.get("vue");
     if (vueParam === "lentilles") {
@@ -111,14 +110,12 @@ export default function ContactPage() {
     setStatus("loading");
     setErrorMsg("");
 
-    // Vérification ordonnance obligatoire
     if (!ordonnance) {
       setStatus("error");
       setErrorMsg("L'ordonnance est obligatoire pour commander des lentilles.");
       return;
     }
 
-    // Vérification carte mutuelle si cochée
     if (aMutuelle && !mutuelle) {
       setStatus("error");
       setErrorMsg("Veuillez joindre votre carte de mutuelle.");

@@ -147,7 +147,6 @@ function getNextDays(minDays: number): string[] {
 		date.setDate(today.getDate() + i);
 		days.push(date.toISOString().split("T")[0]);
 	}
-	// Compléter la dernière semaine jusqu'au samedi
 	const lastDate = new Date(today);
 	lastDate.setDate(today.getDate() + minDays);
 	while (lastDate.getDay() !== 6) {
@@ -218,7 +217,6 @@ export default function RendezVousPage() {
 
 	const rawDates = useMemo(() => getNextDays(14), []);
 
-	// Retirer les jours de repos hebdomadaire, sauf ouvertures exceptionnelles
 	const ouverturesSet = useMemo(
 		() => new Set(ouverturesExc.map((o) => o.date)),
 		[ouverturesExc]
@@ -234,7 +232,6 @@ export default function RendezVousPage() {
 		});
 	}, [rawDates, horaires, ouverturesSet]);
 
-	// Griser les fermetures temporaires (vacances, fermetures), sauf ouvertures exceptionnelles
 	const closedDates = useMemo(() => {
 		const closed = new Set<string>();
 		for (const date of availableDates) {
@@ -477,14 +474,12 @@ export default function RendezVousPage() {
 
 							<div className="space-y-6">
 								{(() => {
-									// Grouper les dates par semaine (lundi → samedi)
 									const weeks: { label: string; dates: string[] }[] = [];
 									let currentWeek: string[] = [];
 									let currentMonday = "";
 									for (const date of availableDates) {
 										const d = new Date(date + "T12:00:00");
 										const day = d.getDay();
-										// Calculer le lundi de cette semaine
 										const monday = new Date(d);
 										monday.setDate(d.getDate() - ((day + 6) % 7));
 										const mondayStr = monday.toISOString().split("T")[0];

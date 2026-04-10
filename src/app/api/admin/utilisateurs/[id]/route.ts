@@ -49,7 +49,6 @@ export async function PUT(
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
-    // Vérifier que l'email n'est pas déjà utilisé par un autre admin
     if (email && email !== admin.email) {
       const existing = await AdminModel.findOne({ email });
       if (existing) {
@@ -99,7 +98,6 @@ export async function DELETE(
     const { id } = await params;
     await connectDB();
 
-    // Vérifier qu'il restera au moins un admin
     const count = await AdminModel.countDocuments();
     if (count <= 1) {
       return NextResponse.json(

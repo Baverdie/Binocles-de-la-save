@@ -17,7 +17,6 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .lean();
 
-    // Remplacer googleRefreshToken par un boolean pour ne pas exposer le token
     const sanitized = admins.map((admin) => ({
       ...admin,
       googleRefreshToken: admin.googleRefreshToken ? "connected" : undefined,
@@ -58,7 +57,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vérifier si l'email existe déjà
     const existing = await AdminModel.findOne({ email });
     if (existing) {
       return NextResponse.json(

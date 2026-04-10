@@ -96,7 +96,7 @@ export default function FAQAdminPage() {
 			document.removeEventListener("touchmove", onTouchMove);
 			document.removeEventListener("touchend", onTouchEnd);
 		};
-	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+	}, []);
 
 	async function fetchFaqs() {
 		try {
@@ -224,7 +224,6 @@ export default function FAQAdminPage() {
 	function handleDragOver(e: React.DragEvent, targetFaq: Faq) {
 		e.preventDefault();
 		if (!draggedId || draggedId === targetFaq._id) return;
-		// Ne pas permettre le drag entre catégories
 		if (dragCategorie !== targetFaq.categorie) return;
 
 		setFaqs((prev) => {

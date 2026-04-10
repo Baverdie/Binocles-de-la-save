@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
 	const state = searchParams.get("state");
 	const error = searchParams.get("error");
 
-	// L'utilisateur a refusé
 	if (error) {
 		return redirect("denied");
 	}
@@ -30,7 +29,6 @@ export async function GET(request: NextRequest) {
 		return redirect("error");
 	}
 
-	// Vérifier le state anti-CSRF
 	const adminId = verifyState(state);
 	if (!adminId) {
 		return redirect("invalid_state");

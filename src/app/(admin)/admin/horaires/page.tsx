@@ -509,7 +509,6 @@ export default function HorairesPage() {
 		}
 	}
 
-	// === Ouvertures exceptionnelles ===
 	async function addOuverture(e: React.FormEvent) {
 		e.preventDefault();
 		if (!ouvertureForm.date) return;

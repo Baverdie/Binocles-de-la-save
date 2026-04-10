@@ -45,7 +45,6 @@ export async function PATCH(
 			if (raisonAnnulation) rdv.raisonAnnulation = raisonAnnulation;
 			await rdv.save();
 
-			// Supprimer l'événement Google Calendar
 			if (rdv.googleEventId) {
 				try {
 					const connectedAdmin = await getConnectedAdmin();
@@ -103,7 +102,6 @@ export async function DELETE(
 		const { id } = await params;
 		await connectDB();
 
-		// Récupérer le RDV avant suppression pour le googleEventId
 		const rdv = await RdvModel.findById(id);
 		if (!rdv) {
 			return NextResponse.json(
@@ -112,7 +110,6 @@ export async function DELETE(
 			);
 		}
 
-		// Supprimer l'événement Google Calendar
 		if (rdv.googleEventId) {
 			try {
 				const connectedAdmin = await getConnectedAdmin();

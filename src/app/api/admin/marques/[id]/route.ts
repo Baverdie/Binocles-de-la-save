@@ -87,7 +87,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Marque non trouvée" }, { status: 404 });
     }
 
-    // Nettoyage des fichiers uploadés
     const filesToDelete: string[] = [];
     if (marque.logo) filesToDelete.push(marque.logo);
     if (marque.images) filesToDelete.push(...marque.images);
@@ -97,7 +96,6 @@ export async function DELETE(
         const fullPath = path.join(process.cwd(), "public", filePath);
         await unlink(fullPath);
       } catch {
-        // Fichier déjà supprimé ou introuvable, on continue
       }
     }
 

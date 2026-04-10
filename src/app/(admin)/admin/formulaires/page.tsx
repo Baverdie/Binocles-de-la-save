@@ -18,18 +18,14 @@ function parseCommande(message: string) {
 	const produit = message.match(/Produit d'entretien : (.+)/)?.[1];
 	const userMessage = message.match(/\nMessage : ([\s\S]+)/)?.[1]?.trim();
 
-	// Calcul du nombre de boîtes par œil
 	const mois = parseInt(duree) || 0;
 	const isJournalieres = format.toLowerCase().includes("journal");
 	let boitesParOeil: number | null = null;
 	if (mois > 0) {
-		if (isJournalieres) {
-			// 90 lentilles/boîte, 1 lentille/jour/œil → 30 lentilles/mois/œil
+		if (isJournalieres)
 			boitesParOeil = Math.ceil((mois * 30) / 90);
-		} else {
-			// 6 lentilles/boîte, 1 lentille/mois/œil
+		else
 			boitesParOeil = Math.ceil(mois / 6);
-		}
 	}
 
 	return { format, duree, produit, userMessage, boitesParOeil };

@@ -48,7 +48,6 @@ export default function MarquesPage() {
     fetchMarques();
   }, []);
 
-  // Fermeture modal avec Escape
   const closeForm = useCallback(() => {
     setShowForm(false);
     setEditingMarque(null);
