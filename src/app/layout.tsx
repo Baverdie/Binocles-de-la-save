@@ -9,6 +9,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://binoclesdelasave.fr"),
   title: {
     default: "Binocles de la Save - Opticien à Levignac (31530)",
     template: "%s | Binocles de la Save",

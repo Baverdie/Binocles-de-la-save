@@ -1,5 +1,19 @@
 export const dynamic = "force-dynamic";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Binocles de la Save - Opticien indépendant à Levignac (31530)",
+  description:
+    "Opticien indépendant à Levignac (31530). Examen de vue, montures créateurs, verres sur mesure, lentilles. Prise de rendez-vous en ligne. Proche Toulouse, Haute-Garonne.",
+  openGraph: {
+    title: "Binocles de la Save - Opticien indépendant à Levignac",
+    description:
+      "Votre opticien de quartier à Levignac. Examen de vue, montures créateurs, verres sur mesure. Rendez-vous en ligne.",
+    url: "https://binoclesdelasave.fr",
+  },
+};
+
 import {
   HeroSection,
   PresentationSection,
@@ -90,8 +104,51 @@ export default async function HomePage() {
     getGoogleReviews(),
   ]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Optician",
+    name: "Binocles de la Save",
+    description:
+      "Opticien indépendant à Levignac. Examen de vue, montures créateurs, verres sur mesure, lentilles.",
+    url: "https://binoclesdelasave.fr",
+    telephone: "+33534521969",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "42 Avenue de la République",
+      addressLocality: "Levignac",
+      postalCode: "31530",
+      addressCountry: "FR",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 43.6745,
+      longitude: 1.2418,
+    },
+    openingHoursSpecification: [
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:30", closes: "12:30" },
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"], opens: "14:00", closes: "18:30" },
+      { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "09:30", closes: "12:30" },
+    ],
+    sameAs: [
+      "https://www.facebook.com/p/Binocles-de-la-Save-100087063979921/",
+    ],
+    image: "https://binoclesdelasave.fr/opengraph-image",
+    priceRange: "€€",
+    currenciesAccepted: "EUR",
+    paymentAccepted: "Cash, Credit Card, Carte Vitale",
+    areaServed: {
+      "@type": "GeoCircle",
+      geoMidpoint: { "@type": "GeoCoordinates", latitude: 43.6745, longitude: 1.2418 },
+      geoRadius: "20000",
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <HeroSection prochainEvenement={prochainEvenement} />
       <PresentationSection />
       <ServicesSection />
