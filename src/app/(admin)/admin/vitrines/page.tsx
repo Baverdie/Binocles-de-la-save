@@ -29,6 +29,7 @@ export default function VitrinésAdminPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -164,12 +165,13 @@ export default function VitrinésAdminPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Supprimer cette vitrine ?")) return;
     try {
       const res = await fetch(`/api/admin/vitrines/${id}`, { method: "DELETE" });
       if (res.ok) setItems((arr) => arr.filter((i) => i._id !== id));
     } catch {
       console.error("Erreur suppression");
+    } finally {
+      setConfirmDeleteId(null);
     }
   }
 
@@ -250,15 +252,32 @@ export default function VitrinésAdminPage() {
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
-                <button
-                  onClick={() => handleDelete(item._id)}
-                  className="p-2 text-brown/50 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                  title="Supprimer"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </button>
+                {confirmDeleteId === item._id ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="px-2.5 py-1 text-xs text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Confirmer
+                    </button>
+                    <button
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="px-2.5 py-1 text-xs text-brown/60 hover:text-brown rounded-lg hover:bg-brown/5 transition-colors cursor-pointer"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmDeleteId(item._id)}
+                    className="p-2 text-brown/50 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                    title="Supprimer"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           ))}
