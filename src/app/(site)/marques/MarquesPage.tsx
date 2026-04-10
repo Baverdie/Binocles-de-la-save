@@ -383,22 +383,37 @@ export default function MarquesPage() {
                         <p className="text-brown/50 text-xs sm:text-sm text-center sm:text-left">
                           Découvrez la collection {selectedMarque.nom} en boutique
                         </p>
-                        <Link
-                          href="/rendez-vous"
-                          onClick={() => setSelectedMarque(null)}
-                          className="inline-flex items-center gap-2 bg-brown text-beige px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-brown/90 hover:scale-[1.02]"
-                        >
-                          Prendre rendez-vous
-                          <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                            <path
-                              d="M4 10h12M12 6l4 4-4 4"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </Link>
+                        <div className="flex items-center gap-3">
+                          {selectedMarque.lienSite && (
+                            <a
+                              href={selectedMarque.lienSite}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 border border-brown/20 text-brown px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 hover:border-brown/50 hover:bg-brown/5"
+                            >
+                              Site officiel
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M7 17l9.2-9.2M17 17V7.8H7.8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </a>
+                          )}
+                          <Link
+                            href="/rendez-vous"
+                            onClick={() => setSelectedMarque(null)}
+                            className="inline-flex items-center gap-2 bg-brown text-beige px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 hover:bg-brown/90 hover:scale-[1.02]"
+                          >
+                            Prendre rendez-vous
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                              <path
+                                d="M4 10h12M12 6l4 4-4 4"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
