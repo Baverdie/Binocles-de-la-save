@@ -217,7 +217,7 @@ export default function MarquesPage() {
     }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError("");
@@ -812,7 +812,7 @@ export default function MarquesPage() {
                   {formData.images.map((img, index) => (
                     <div
                       key={index}
-                      className="relative aspect-square rounded-xl overflow-hidden bg-beige/50 group"
+                      className="relative aspect-4/3 rounded-xl overflow-hidden bg-beige/50 group"
                     >
                       <Image
                         src={img}
@@ -843,7 +843,7 @@ export default function MarquesPage() {
                   {formData.images.length < 6 && (
                     <div
                       onClick={() => imageInputRef.current?.click()}
-                      className="aspect-square rounded-xl border-2 border-dashed border-brown/20 flex items-center justify-center cursor-pointer hover:border-brown/40 transition-colors"
+                      className="aspect-4/3 rounded-xl border-2 border-dashed border-brown/20 flex items-center justify-center cursor-pointer hover:border-brown/40 transition-colors"
                     >
                       {uploadingImage ? (
                         <div className="w-5 h-5 border-2 border-brown/20 border-t-brown rounded-full animate-spin" />
