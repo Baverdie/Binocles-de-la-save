@@ -6,7 +6,7 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 
 		if (metadata.format === "svg") {
 			return await sharp(buffer, { density: 300 })
-				.resize({ width: 800 })
+				.resize({ width: 1000 })
 				.webp({ quality: 90, effort: 6 })
 				.toBuffer();
 		}
@@ -29,7 +29,7 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 		return await sharp(data, {
 			raw: { width: info.width, height: info.height, channels: 4 },
 		})
-			.resize({ width: 800, withoutEnlargement: true })
+			.resize({ width: 1000, withoutEnlargement: true })
 			.webp({ quality: 90, effort: 6 })
 			.toBuffer();
 	} catch (error) {
@@ -45,7 +45,7 @@ export async function optimizeGalleryImage(
 	try {
 		return await sharp(buffer)
 			.resize({ width: maxWidth, withoutEnlargement: true })
-			.webp({ quality: 85, effort: 5 })
+			.webp({ quality: 90, effort: 6 })
 			.toBuffer();
 	} catch (error) {
 		console.error("[ImageProcessing] Erreur optimisation galerie:", error);

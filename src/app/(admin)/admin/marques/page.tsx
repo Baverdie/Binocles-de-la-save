@@ -805,7 +805,7 @@ export default function MarquesPage() {
                 <label className="block text-sm text-brown/70 mb-1.5">
                   Images de la collection{" "}
                   <span className="text-brown/40">
-                    ({formData.images.length}/5)
+                    ({formData.images.length}/6)
                   </span>
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
@@ -840,7 +840,7 @@ export default function MarquesPage() {
                       </button>
                     </div>
                   ))}
-                  {formData.images.length < 5 && (
+                  {formData.images.length < 6 && (
                     <div
                       onClick={() => imageInputRef.current?.click()}
                       className="aspect-square rounded-xl border-2 border-dashed border-brown/20 flex items-center justify-center cursor-pointer hover:border-brown/40 transition-colors"
