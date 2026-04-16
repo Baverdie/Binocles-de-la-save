@@ -40,11 +40,19 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 
 export async function optimizeGalleryImage(
 	buffer: Buffer,
-	maxWidth: number = 1200
+	maxWidth: number = 1200,
+	crop: boolean = false
 ): Promise<Buffer> {
 	try {
+		const height = crop ? Math.round((maxWidth / 4) * 3) : undefined;
 		return await sharp(buffer)
-			.resize({ width: maxWidth, withoutEnlargement: true })
+			.resize({
+				width: maxWidth,
+				height,
+				fit: crop ? "cover" : "inside",
+				position: crop ? "attention" : undefined,
+				withoutEnlargement: true,
+			})
 			.webp({ quality: 90, effort: 6 })
 			.toBuffer();
 	} catch (error) {
