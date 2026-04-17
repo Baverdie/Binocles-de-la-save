@@ -34,10 +34,7 @@ export interface AvantPremiere {
   titre: string;
   description?: string;
   image: string;
-  dateDebut: Date;
-  dateFin: Date;
   actif: boolean;
-  ordre: number;
   createdAt: Date;
   updatedAt: Date;
 }

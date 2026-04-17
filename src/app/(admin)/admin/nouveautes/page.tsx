@@ -8,10 +8,7 @@ interface AvantPremiere {
 	titre: string;
 	description?: string;
 	image: string;
-	dateDebut: string;
-	dateFin: string;
 	actif: boolean;
-	ordre: number;
 	createdAt: string;
 }
 
@@ -19,7 +16,6 @@ const defaultForm = {
 	titre: "",
 	description: "",
 	image: "",
-	dateDebut: "",
 	actif: true,
 };
 
@@ -32,7 +28,9 @@ export default function NouveautesAdminPage() {
 	const [saving, setSaving] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	const [error, setError] = useState("");
+	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const mouseDownTargetRef = useRef<EventTarget | null>(null);
 
 	useEffect(() => {
 		fetchItems();
@@ -80,7 +78,6 @@ export default function NouveautesAdminPage() {
 			titre: item.titre,
 			description: item.description || "",
 			image: item.image,
-			dateDebut: item.dateDebut.slice(0, 10),
 			actif: item.actif,
 		});
 		setError("");
@@ -112,7 +109,7 @@ export default function NouveautesAdminPage() {
 		if (fileInputRef.current) fileInputRef.current.value = "";
 	}
 
-	async function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		if (!formData.titre.trim()) {
 			setError("Le titre est requis");
@@ -120,10 +117,6 @@ export default function NouveautesAdminPage() {
 		}
 		if (!formData.image) {
 			setError("Une image est requise");
-			return;
-		}
-		if (!formData.dateDebut) {
-			setError("La date de début est requise");
 			return;
 		}
 
@@ -143,7 +136,6 @@ export default function NouveautesAdminPage() {
 					titre: formData.titre,
 					description: formData.description,
 					image: formData.image,
-					dateDebut: formData.dateDebut,
 					actif: formData.actif,
 				}),
 			});
@@ -175,18 +167,17 @@ export default function NouveautesAdminPage() {
 					titre: item.titre,
 					description: item.description,
 					image: item.image,
-					dateDebut: item.dateDebut,
 					actif: !item.actif,
 				}),
 			});
 			if (!res.ok) throw new Error();
+			fetchItems();
 		} catch {
 			setItems(prev);
 		}
 	}
 
 	async function handleDelete(id: string) {
-		if (!confirm("Supprimer cette avant-première ?")) return;
 		try {
 			const res = await fetch(`/api/admin/avant-premieres/${id}`, {
 				method: "DELETE",
@@ -196,6 +187,8 @@ export default function NouveautesAdminPage() {
 			}
 		} catch {
 			console.error("Erreur suppression");
+		} finally {
+			setConfirmDeleteId(null);
 		}
 	}
 
@@ -207,23 +200,19 @@ export default function NouveautesAdminPage() {
 		});
 	}
 
-	function getStatut(item: AvantPremiere) {
-		if (!item.actif) return { label: "Désactivée", color: "text-brown/40 bg-brown/5" };
-		const now = new Date();
-		const debut = new Date(item.dateDebut);
-		const fin = new Date(item.dateFin);
-		if (now < debut) return { label: "Programmée", color: "text-blue-600 bg-blue-50" };
-		if (now > fin) return { label: "Terminée", color: "text-brown/40 bg-brown/5" };
-		return { label: "En cours", color: "text-green-600 bg-green-50" };
-	}
+	const activeCount = items.filter((i) => i.actif).length;
 
 	return (
 		<div className="space-y-8">
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 				<div>
-					<h1 className="font-serif text-2xl text-brown">Nouveautés & Avant-premières</h1>
+					<h1 className="font-serif text-2xl text-brown">Nouveautés</h1>
 					<p className="text-sm text-brown/50 mt-1">
-						Gérez les avant-premières affichées sur la page d&apos;accueil
+						<span className={activeCount >= 5 ? "text-orange-500 font-medium" : ""}>
+							{activeCount}/5 actives
+						</span>
+						{" · "}
+						La plus ancienne est désactivée automatiquement quand une nouvelle est ajoutée
 					</p>
 				</div>
 				<button
@@ -242,7 +231,7 @@ export default function NouveautesAdminPage() {
 			) : items.length === 0 ? (
 				<div className="rounded-2xl border border-brown/10 bg-beige/70 p-12 text-center">
 					<p className="text-brown/50 text-sm mb-4">
-						Aucune avant-première. Créez-en une pour remplacer les données de démonstration sur le site.
+						Aucune nouveauté. Créez-en une pour l&apos;afficher sur la page d&apos;accueil.
 					</p>
 					<button
 						onClick={openCreate}
@@ -253,67 +242,81 @@ export default function NouveautesAdminPage() {
 				</div>
 			) : (
 				<div className="space-y-3">
-					{items.map((item) => {
-						const statut = getStatut(item);
-						return (
-							<div
-								key={item._id}
-								className="rounded-2xl border border-brown/10 bg-beige/70 p-4 flex gap-4 items-start"
-							>
-								<div className="relative w-32 h-20 rounded-xl overflow-hidden bg-brown/5 shrink-0">
-									{item.image && (
-										<Image
-											src={item.image}
-											alt={item.titre}
-											fill
-											className="object-cover"
-										/>
-									)}
-								</div>
+					{items.map((item) => (
+						<div
+							key={item._id}
+							className="rounded-2xl border border-brown/10 bg-beige/70 p-4 flex gap-4 items-start"
+						>
+							<div className="relative w-32 h-24 rounded-xl overflow-hidden bg-brown/5 shrink-0">
+								{item.image && (
+									<Image
+										src={item.image}
+										alt={item.titre}
+										fill
+										className="object-cover"
+									/>
+								)}
+							</div>
 
-								<div className="flex-1 min-w-0">
-									<div className="flex items-center gap-2 mb-1">
-										<h3 className="font-medium text-brown truncate max-w-[50vw]">{item.titre}</h3>
-										<span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${statut.color}`}>
-											{statut.label}
-										</span>
-									</div>
-									{item.description && (
-										<p className="text-xs text-brown/50 line-clamp-1 mb-1">
-											{item.description}
-										</p>
-									)}
-									<p className="text-xs text-brown/40">
-										Depuis le {formatDate(item.dateDebut)} (1 mois)
+							<div className="flex-1 min-w-0">
+								<div className="flex items-center gap-2 mb-1">
+									<h3 className="font-medium text-brown truncate max-w-[50vw]">{item.titre}</h3>
+									<span className={`text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap ${item.actif ? "text-green-600 bg-green-50" : "text-brown/40 bg-brown/5"}`}>
+										{item.actif ? "Active" : "Inactive"}
+									</span>
+								</div>
+								{item.description && (
+									<p className="text-xs text-brown/50 line-clamp-1 mb-1">
+										{item.description}
 									</p>
-								</div>
+								)}
+								<p className="text-xs text-brown/40">
+									Ajoutée le {formatDate(item.createdAt)}
+								</p>
+							</div>
 
-								<div className="flex items-center gap-2 shrink-0">
-									<button
-										onClick={() => handleToggleActif(item)}
-										className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer ${
-											item.actif ? "bg-green-500" : "bg-brown/20"
+							<div className="flex items-center gap-2 shrink-0">
+								<button
+									onClick={() => handleToggleActif(item)}
+									className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer ${
+										item.actif ? "bg-green-500" : "bg-brown/20"
+									}`}
+									title={item.actif ? "Désactiver" : "Activer"}
+								>
+									<span
+										className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+											item.actif ? "left-5" : "left-0.5"
 										}`}
-										title={item.actif ? "Désactiver" : "Activer"}
-									>
-										<span
-											className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
-												item.actif ? "left-5" : "left-0.5"
-											}`}
-										/>
-									</button>
+									/>
+								</button>
+								<button
+									onClick={() => openEdit(item)}
+									className="p-2 text-brown/50 hover:text-brown rounded-lg hover:bg-brown/5 active:bg-brown/10 transition-colors cursor-pointer"
+									title="Modifier"
+								>
+									<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+										<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+										<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+									</svg>
+								</button>
+								{confirmDeleteId === item._id ? (
+									<div className="flex items-center gap-1">
+										<button
+											onClick={() => handleDelete(item._id)}
+											className="px-2 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
+										>
+											Supprimer
+										</button>
+										<button
+											onClick={() => setConfirmDeleteId(null)}
+											className="px-2 py-1 text-xs text-brown/50 hover:text-brown rounded-lg hover:bg-brown/5 cursor-pointer"
+										>
+											Annuler
+										</button>
+									</div>
+								) : (
 									<button
-										onClick={() => openEdit(item)}
-										className="p-2 text-brown/50 hover:text-brown rounded-lg hover:bg-brown/5 active:bg-brown/10 transition-colors cursor-pointer"
-										title="Modifier"
-									>
-										<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-											<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-											<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-										</svg>
-									</button>
-									<button
-										onClick={() => handleDelete(item._id)}
+										onClick={() => setConfirmDeleteId(item._id)}
 										className="p-2 text-brown/50 hover:text-red-600 rounded-lg hover:bg-red-50 active:text-red-700 active:bg-red-100 transition-colors cursor-pointer"
 										title="Supprimer"
 									>
@@ -321,20 +324,24 @@ export default function NouveautesAdminPage() {
 											<path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
 										</svg>
 									</button>
-								</div>
+								)}
 							</div>
-						);
-					})}
+						</div>
+					))}
 				</div>
 			)}
 
 			{showForm && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-brown/30 backdrop-blur-sm">
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-brown/30 backdrop-blur-sm"
+					onMouseDown={(e) => { mouseDownTargetRef.current = e.target; }}
+					onClick={(e) => { if (mouseDownTargetRef.current === e.currentTarget) closeForm(); }}
+				>
 					<div className="bg-beige rounded-2xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
 						<form onSubmit={handleSubmit} className="p-6 space-y-5">
 							<div className="flex items-center justify-between">
 								<h2 className="font-serif text-lg text-brown">
-									{editing ? "Modifier" : "Nouvelle avant-première"}
+									{editing ? "Modifier la nouveauté" : "Nouvelle nouveauté"}
 								</h2>
 								<button
 									type="button"
@@ -379,7 +386,7 @@ export default function NouveautesAdminPage() {
 							<div>
 								<label className="block text-xs text-brown/60 mb-2">Image</label>
 								{formData.image && (
-									<div className="relative w-full h-40 rounded-xl overflow-hidden mb-2">
+									<div className="relative w-full aspect-video rounded-xl overflow-hidden mb-2">
 										<Image src={formData.image} alt="" fill className="object-cover" />
 									</div>
 								)}
@@ -400,17 +407,11 @@ export default function NouveautesAdminPage() {
 								/>
 							</div>
 
-							<div>
-								<label className="block text-xs text-brown/60 mb-1">Date de début</label>
-								<input
-									type="date"
-									value={formData.dateDebut}
-									onChange={(e) => setFormData((p) => ({ ...p, dateDebut: e.target.value }))}
-									className="w-full px-3 py-2 rounded-xl border border-brown/20 text-sm text-brown bg-white/50 focus:ring-1 focus:ring-brown/30 focus:outline-none"
-									required
-								/>
-								<p className="text-[10px] text-brown/40 mt-1">Durée automatique : 1 mois</p>
-							</div>
+							{!editing && activeCount >= 5 && formData.actif && (
+								<p className="text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg">
+									5 nouveautés actives — la plus ancienne sera automatiquement désactivée.
+								</p>
+							)}
 
 							<label className="flex items-center gap-3 cursor-pointer">
 								<input
@@ -419,7 +420,7 @@ export default function NouveautesAdminPage() {
 									onChange={(e) => setFormData((p) => ({ ...p, actif: e.target.checked }))}
 									className="h-4 w-4 rounded border-brown/30 text-brown cursor-pointer"
 								/>
-								<span className="text-sm text-brown">Active</span>
+								<span className="text-sm text-brown">Active dès la création</span>
 							</label>
 
 							<div className="flex justify-end gap-3 pt-2">

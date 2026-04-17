@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import connectDB from "@/lib/db/mongodb";
 import AvantPremiereModel from "@/models/AvantPremiere";
 
+const MAX_ACTIFS = 5;
+
 export async function PUT(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -15,32 +17,30 @@ export async function PUT(
 
 		const { id } = await params;
 		const body = await request.json();
-		const { titre, description, image, dateDebut, actif } = body;
+		const { titre, description, image, actif } = body;
 
-		if (!titre || !image || !dateDebut) {
+		if (!titre || !image) {
 			return NextResponse.json(
-				{ error: "Titre, une image et une date de début sont requis" },
+				{ error: "Titre et image sont requis" },
 				{ status: 400 }
 			);
 		}
 
 		await connectDB();
 
-		const debut = new Date(dateDebut);
-		const fin = new Date(debut);
-		fin.setMonth(fin.getMonth() + 1);
-		fin.setDate(fin.getDate() + 1);
+		if (actif === true) {
+			const actifs = await AvantPremiereModel.find({ actif: true, _id: { $ne: id } })
+				.sort({ createdAt: 1 })
+				.lean();
+
+			if (actifs.length >= MAX_ACTIFS) {
+				await AvantPremiereModel.findByIdAndUpdate(actifs[0]._id, { actif: false });
+			}
+		}
 
 		const updated = await AvantPremiereModel.findByIdAndUpdate(
 			id,
-			{
-				titre,
-				description: description || undefined,
-				image,
-				dateDebut: debut,
-				dateFin: fin,
-				actif,
-			},
+			{ titre, description: description || undefined, image, actif },
 			{ new: true }
 		).lean();
 

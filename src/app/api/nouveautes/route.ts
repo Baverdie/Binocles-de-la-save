@@ -8,14 +8,8 @@ export async function GET() {
   try {
     await connectDB();
 
-    const now = new Date();
-
-    const nouveautes = await AvantPremiereModel.find({
-      actif: true,
-      dateDebut: { $lte: now },
-      dateFin: { $gte: now },
-    })
-      .sort({ ordre: 1 })
+    const nouveautes = await AvantPremiereModel.find({ actif: true })
+      .sort({ createdAt: -1 })
       .lean();
 
     return NextResponse.json(nouveautes);

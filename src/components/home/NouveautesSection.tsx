@@ -11,13 +11,6 @@ import type { AvantPremiere } from "@/types";
 import "swiper/css";
 import "swiper/css/pagination";
 
-function formatDate(date: Date | string) {
-  return new Date(date).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 interface NouveautesSectionProps {
   nouveautes: AvantPremiere[];
@@ -125,10 +118,6 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
                         {nouveaute.description}
                       </p>
                     )}
-                    <p className="text-beige/50 text-[10px] sm:text-xs md:text-sm">
-                      Disponible du {formatDate(nouveaute.dateDebut)} au{" "}
-                      {formatDate(nouveaute.dateFin)}
-                    </p>
                   </div>
                 </div>
               </SwiperSlide>
