@@ -64,7 +64,7 @@ export async function PATCH(
 			}).format(rdv.dateRdv);
 
 			if (rdv.email) {
-				envoyerEmail({
+				await envoyerEmail({
 					to: rdv.email,
 					subject: "Annulation de votre rendez-vous — Binocles de la Save",
 					html: templateAnnulationRdv({
