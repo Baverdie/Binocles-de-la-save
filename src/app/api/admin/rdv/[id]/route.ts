@@ -63,17 +63,19 @@ export async function PATCH(
 				year: "numeric",
 			}).format(rdv.dateRdv);
 
-			envoyerEmail({
-				to: rdv.email,
-				subject: "Annulation de votre rendez-vous — Binocles de la Save",
-				html: templateAnnulationRdv({
-					prenom: rdv.prenom,
-					date: dateFormatee,
-					heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
-					raison: raisonAnnulation,
-					proposerAutreCreneau: true,
-				}),
-			}).catch((err) => console.error("[API] Erreur email annulation:", err));
+			if (rdv.email) {
+				envoyerEmail({
+					to: rdv.email,
+					subject: "Annulation de votre rendez-vous — Binocles de la Save",
+					html: templateAnnulationRdv({
+						prenom: rdv.prenom,
+						date: dateFormatee,
+						heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
+						raison: raisonAnnulation,
+						proposerAutreCreneau: true,
+					}),
+				}).catch((err) => console.error("[API] Erreur email annulation:", err));
+			}
 		}
 
 		if (action === "effectuer") {
