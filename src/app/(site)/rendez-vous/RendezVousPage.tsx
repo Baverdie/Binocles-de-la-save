@@ -275,6 +275,11 @@ export default function RendezVousPage() {
 		e.preventDefault();
 		if (!typeRdv || !selectedDate || !selectedHeure) return;
 
+		if (!formData.email && !formData.telephone) {
+			setError("Veuillez renseigner au moins un email ou un numéro de téléphone.");
+			return;
+		}
+
 		setSubmitting(true);
 		setError(null);
 
@@ -695,10 +700,11 @@ export default function RendezVousPage() {
 								</div>
 
 								<div>
-									<label className="block text-sm text-brown/70 mb-2">Email *</label>
+									<label className="block text-sm text-brown/70 mb-2">
+										Email <span className="text-brown/40">(au moins email ou téléphone)</span>
+									</label>
 									<input
 										type="email"
-										required
 										value={formData.email}
 										onChange={(e) => setFormData({ ...formData, email: e.target.value })}
 										className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-brown/10 bg-white text-sm sm:text-base focus:border-accent focus:outline-none transition-colors"
@@ -707,10 +713,11 @@ export default function RendezVousPage() {
 								</div>
 
 								<div>
-									<label className="block text-sm text-brown/70 mb-2">Téléphone *</label>
+									<label className="block text-sm text-brown/70 mb-2">
+										Téléphone <span className="text-brown/40">(au moins email ou téléphone)</span>
+									</label>
 									<input
 										type="tel"
-										required
 										value={formData.telephone}
 										onChange={(e) => setFormData({ ...formData, telephone: formatPhone(e.target.value) })}
 										className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-brown/10 bg-white text-sm sm:text-base focus:border-accent focus:outline-none transition-colors"
@@ -775,10 +782,12 @@ export default function RendezVousPage() {
 								</p>
 							</div>
 
-							<p className="text-brown/60 mb-6">
-								Un email de confirmation vous a été envoyé à<br />
-								<span className="font-medium text-brown">{formData.email}</span>
-							</p>
+							{formData.email && (
+								<p className="text-brown/60 mb-6">
+									Un email de confirmation vous a été envoyé à<br />
+									<span className="font-medium text-brown">{formData.email}</span>
+								</p>
+							)}
 
 							<div className="relative max-w-xs mx-auto mb-8">
 								<button

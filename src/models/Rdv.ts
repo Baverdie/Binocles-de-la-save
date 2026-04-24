@@ -5,8 +5,8 @@ const RdvSchema = new Schema<Rdv>(
   {
     nom: { type: String, required: true },
     prenom: { type: String, required: true },
-    email: { type: String, required: true },
-    telephone: { type: String, required: true },
+    email: { type: String },
+    telephone: { type: String },
     message: { type: String, maxlength: 500 },
     typeRdv: {
       type: String,

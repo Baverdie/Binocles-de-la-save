@@ -50,6 +50,7 @@ export default function RendezVousAdminPage() {
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const [cancellingId, setCancellingId] = useState<string | null>(null);
 	const [cancelReason, setCancelReason] = useState("");
+	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
 	const [configRdv, setConfigRdv] = useState<ConfigRdvForm>({
 		durees: { examen: 60, vente: 45, reparation: 30 },
@@ -239,10 +240,9 @@ export default function RendezVousAdminPage() {
 	}
 
 	async function handleDelete(rdv: Rdv) {
-		if (!confirm(`Supprimer le RDV de "${rdv.prenom} ${rdv.nom}" ?`)) return;
-
 		const prev = rdvs;
 		setRdvs((r) => r.filter((item) => item._id !== rdv._id));
+		setConfirmDeleteId(null);
 		try {
 			const res = await fetch(`/api/admin/rdv/${rdv._id}`, {
 				method: "DELETE",
@@ -549,20 +549,37 @@ export default function RendezVousAdminPage() {
 												</svg>
 												Appeler
 											</a>
-											<button
-												onClick={() => handleDelete(rdv)}
-												className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-brown/30 hover:text-red-600 hover:bg-brown/5 active:bg-brown/10 transition-colors cursor-pointer"
-											>
-												<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-													<path
-														d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"
-														stroke="currentColor"
-														strokeWidth="1.5"
-														strokeLinecap="round"
-													/>
-												</svg>
-												Supprimer
-											</button>
+											{confirmDeleteId === rdv._id ? (
+												<div className="flex items-center gap-1">
+													<button
+														onClick={() => handleDelete(rdv)}
+														className="px-2 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 cursor-pointer"
+													>
+														Supprimer
+													</button>
+													<button
+														onClick={() => setConfirmDeleteId(null)}
+														className="px-2 py-1 text-xs text-brown/50 hover:text-brown rounded-lg hover:bg-brown/5 cursor-pointer"
+													>
+														Annuler
+													</button>
+												</div>
+											) : (
+												<button
+													onClick={() => setConfirmDeleteId(rdv._id)}
+													className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-brown/30 hover:text-red-600 hover:bg-brown/5 active:bg-brown/10 transition-colors cursor-pointer"
+												>
+													<svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+														<path
+															d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"
+															stroke="currentColor"
+															strokeWidth="1.5"
+															strokeLinecap="round"
+														/>
+													</svg>
+													Supprimer
+												</button>
+											)}
 										</div>
 									</div>
 								)}

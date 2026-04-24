@@ -101,31 +101,32 @@ export async function POST(
 
 	const typeLabel = TYPE_LABELS[rdv.typeRdv] ?? rdv.typeRdv;
 
-	// Email de confirmation d'annulation au client (ton neutre : c'est lui qui annule)
-	envoyerEmail({
-		to: rdv.email,
-		subject: "Votre rendez-vous a bien été annulé — Binocles de la Save",
-		html: templateConfirmationAnnulationClient({
-			prenom: rdv.prenom,
-			date: dateFormatee,
-			heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
-		}),
-	}).catch((err) => console.error("[API] Erreur email annulation client:", err));
-
 	const adminEmail = process.env.ADMIN_EMAIL || "contact@binoclesdelasave.fr";
-	envoyerEmail({
-		to: adminEmail,
-		subject: `Annulation client — ${rdv.prenom} ${rdv.nom} — ${typeLabel}`,
-		html: templateAnnulationParClient({
-			nom: rdv.nom,
-			prenom: rdv.prenom,
-			email: rdv.email,
-			telephone: rdv.telephone,
-			date: dateFormatee,
-			heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
-			typeRdv: typeLabel,
-		}),
-	}).catch((err) => console.error("[API] Erreur email notif admin:", err));
+
+	await Promise.allSettled([
+		rdv.email ? envoyerEmail({
+			to: rdv.email,
+			subject: "Votre rendez-vous a bien été annulé — Binocles de la Save",
+			html: templateConfirmationAnnulationClient({
+				prenom: rdv.prenom,
+				date: dateFormatee,
+				heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
+			}),
+		}).catch((err) => console.error("[API] Erreur email annulation client:", err)) : Promise.resolve(),
+		envoyerEmail({
+			to: adminEmail,
+			subject: `Annulation client — ${rdv.prenom} ${rdv.nom} — ${typeLabel}`,
+			html: templateAnnulationParClient({
+				nom: rdv.nom,
+				prenom: rdv.prenom,
+				email: rdv.email,
+				telephone: rdv.telephone,
+				date: dateFormatee,
+				heure: `${rdv.heureDebut} - ${rdv.heureFin}`,
+				typeRdv: typeLabel,
+			}),
+		}).catch((err) => console.error("[API] Erreur email notif admin:", err)),
+	]);
 
 	return NextResponse.json({ success: true });
 }

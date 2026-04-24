@@ -209,8 +209,8 @@ export function templateConfirmationRdv(data: {
 export function templateNotificationNouveauRdv(data: {
   nom: string;
   prenom: string;
-  email: string;
-  telephone: string;
+  email?: string;
+  telephone?: string;
   date: string;
   heure: string;
   typeRdv: string;
@@ -228,8 +228,8 @@ export function templateNotificationNouveauRdv(data: {
     ])}
     ${infoCard([
       infoRow("Nom", `${data.prenom} ${data.nom}`),
-      infoRow("Email", `<a href="mailto:${data.email}" style="color: ${COLORS.accent}; text-decoration: none;">${data.email}</a>`),
-      infoRow("Téléphone", `<a href="tel:${data.telephone}" style="color: ${COLORS.accent}; text-decoration: none;">${data.telephone}</a>`),
+      ...(data.email ? [infoRow("Email", `<a href="mailto:${data.email}" style="color: ${COLORS.accent}; text-decoration: none;">${data.email}</a>`)] : []),
+      ...(data.telephone ? [infoRow("Téléphone", `<a href="tel:${data.telephone}" style="color: ${COLORS.accent}; text-decoration: none;">${data.telephone}</a>`)] : []),
     ])}
     ${data.message ? quoteBlock(data.message, "Message du client") : ""}
     ${button("Voir dans le dashboard", "https://binoclesdelasave.fr/admin/rdv")}
@@ -281,8 +281,8 @@ export function templateAnnulationRdv(data: {
 export function templateAnnulationParClient(data: {
   nom: string;
   prenom: string;
-  email: string;
-  telephone: string;
+  email?: string;
+  telephone?: string;
   date: string;
   heure: string;
   typeRdv: string;
@@ -298,8 +298,8 @@ export function templateAnnulationParClient(data: {
     ])}
     ${infoCard([
       infoRow("Nom", `${data.prenom} ${data.nom}`),
-      infoRow("Email", `<a href="mailto:${data.email}" style="color: ${COLORS.accent}; text-decoration: none;">${data.email}</a>`),
-      infoRow("Téléphone", `<a href="tel:${data.telephone}" style="color: ${COLORS.accent}; text-decoration: none;">${data.telephone}</a>`),
+      ...(data.email ? [infoRow("Email", `<a href="mailto:${data.email}" style="color: ${COLORS.accent}; text-decoration: none;">${data.email}</a>`)] : []),
+      ...(data.telephone ? [infoRow("Téléphone", `<a href="tel:${data.telephone}" style="color: ${COLORS.accent}; text-decoration: none;">${data.telephone}</a>`)] : []),
     ])}
     ${button("Voir dans le dashboard", "https://binoclesdelasave.fr/admin/rdv")}
   `);

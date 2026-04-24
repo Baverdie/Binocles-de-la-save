@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 		const body = await request.json();
 		const { typeRdv, dateRdv, heureDebut, nom, prenom, email, telephone, message } = body;
 
-		if (!typeRdv || !dateRdv || !heureDebut || !nom || !prenom || !email || !telephone) {
+		if (!typeRdv || !dateRdv || !heureDebut || !nom || !prenom || (!email && !telephone)) {
 			return NextResponse.json(
 				{ error: "Tous les champs obligatoires doivent être remplis" },
 				{ status: 400 }
@@ -164,43 +164,45 @@ export async function POST(request: NextRequest) {
 		const icsFilename = genererNomFichierICS(new Date(dateRdv + "T00:00:00"));
 
 		const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://binoclesdelasave.fr";
-		envoyerEmail({
-			to: email,
-			subject: `Rendez-vous confirmé — ${typeLabel}`,
-			html: templateConfirmationRdv({
-				prenom,
-				date: dateFormatee,
-				heure: heureFormatee,
-				typeRdv: typeLabel,
-				adresse: "42 Avenue de la République, 31530 Levignac",
-				telephone: "05 34 52 19 69",
-				cancelUrl: `${appUrl}/rendez-vous/annuler/${cancelToken}`,
-			}),
-			attachments: [
-				{
-					filename: icsFilename,
-					content: icsContent,
-					contentType: "text/calendar",
-				},
-			],
-		}).catch((err) => console.error("[API] Erreur email confirmation:", err));
-
 		const adminEmail = process.env.ADMIN_EMAIL || "contact@binoclesdelasave.fr";
-		envoyerEmail({
-			to: adminEmail,
-			subject: `Nouveau RDV — ${prenom} ${nom} — ${typeLabel}`,
-			html: templateNotificationNouveauRdv({
-				nom,
-				prenom,
-				email,
-				telephone,
-				date: dateFormatee,
-				heure: heureFormatee,
-				typeRdv: typeLabel,
-				message,
-				googleSynced,
-			}),
-		}).catch((err) => console.error("[API] Erreur email notification admin:", err));
+
+		await Promise.allSettled([
+			email ? envoyerEmail({
+				to: email,
+				subject: `Rendez-vous confirmé — ${typeLabel}`,
+				html: templateConfirmationRdv({
+					prenom,
+					date: dateFormatee,
+					heure: heureFormatee,
+					typeRdv: typeLabel,
+					adresse: "42 Avenue de la République, 31530 Levignac",
+					telephone: "05 34 52 19 69",
+					cancelUrl: `${appUrl}/rendez-vous/annuler/${cancelToken}`,
+				}),
+				attachments: [
+					{
+						filename: icsFilename,
+						content: icsContent,
+						contentType: "text/calendar",
+					},
+				],
+			}).catch((err) => console.error("[API] Erreur email confirmation:", err)) : Promise.resolve(),
+			envoyerEmail({
+				to: adminEmail,
+				subject: `Nouveau RDV — ${prenom} ${nom} — ${typeLabel}`,
+				html: templateNotificationNouveauRdv({
+					nom,
+					prenom,
+					email,
+					telephone,
+					date: dateFormatee,
+					heure: heureFormatee,
+					typeRdv: typeLabel,
+					message,
+					googleSynced,
+				}),
+			}).catch((err) => console.error("[API] Erreur email notification admin:", err)),
+		]);
 
 		return NextResponse.json({ success: true, rdv }, { status: 201 });
 	} catch (error) {
