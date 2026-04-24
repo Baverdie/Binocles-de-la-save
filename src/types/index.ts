@@ -75,8 +75,8 @@ export interface Rdv {
   _id: string;
   nom: string;
   prenom: string;
-  email: string;
-  telephone: string;
+  email?: string;
+  telephone?: string;
   message?: string;
   typeRdv: TypeRdv;
   dateRdv: Date;
