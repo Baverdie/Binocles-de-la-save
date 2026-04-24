@@ -62,22 +62,24 @@ export async function GET(request: NextRequest) {
 			const heureFormatee = `${rdv.heureDebut} - ${rdv.heureFin}`;
 
 			try {
-				await envoyerEmail({
-					to: rdv.email,
-					subject: `Rappel — Rendez-vous demain à ${rdv.heureDebut}`,
-					html: templateRappelRdv({
-						prenom: rdv.prenom,
-						date: dateFormatee,
-						heure: heureFormatee,
-						typeRdv: typeLabel,
-						adresse: ADRESSE,
-						telephone: TELEPHONE,
-					}),
-				});
+				if (rdv.email) {
+					await envoyerEmail({
+						to: rdv.email,
+						subject: `Rappel — Rendez-vous demain à ${rdv.heureDebut}`,
+						html: templateRappelRdv({
+							prenom: rdv.prenom,
+							date: dateFormatee,
+							heure: heureFormatee,
+							typeRdv: typeLabel,
+							adresse: ADRESSE,
+							telephone: TELEPHONE,
+						}),
+					});
+					console.log(`[Cron Rappels] Rappel envoyé à ${rdv.email}`);
+				}
 
 				await RdvModel.findByIdAndUpdate(rdv._id, { rappelEnvoye: true });
 				envoyes++;
-				console.log(`[Cron Rappels] Rappel envoyé à ${rdv.email}`);
 			} catch (err) {
 				erreurs++;
 				console.error(`[Cron Rappels] Erreur envoi à ${rdv.email}:`, err);

@@ -102,7 +102,7 @@ export async function POST(
 	const typeLabel = TYPE_LABELS[rdv.typeRdv] ?? rdv.typeRdv;
 
 	// Email de confirmation d'annulation au client (ton neutre : c'est lui qui annule)
-	envoyerEmail({
+	if (rdv.email) envoyerEmail({
 		to: rdv.email,
 		subject: "Votre rendez-vous a bien été annulé — Binocles de la Save",
 		html: templateConfirmationAnnulationClient({
