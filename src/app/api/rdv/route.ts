@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 		const body = await request.json();
 		const { typeRdv, dateRdv, heureDebut, nom, prenom, email, telephone, message } = body;
 
-		if (!typeRdv || !dateRdv || !heureDebut || !nom || !prenom || !email || !telephone) {
+		if (!typeRdv || !dateRdv || !heureDebut || !nom || !prenom || (!email && !telephone)) {
 			return NextResponse.json(
 				{ error: "Tous les champs obligatoires doivent être remplis" },
 				{ status: 400 }
