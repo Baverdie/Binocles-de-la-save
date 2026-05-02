@@ -187,18 +187,20 @@ export default function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="fixed top-0 left-0 right-0 h-14 bg-brown text-beige flex items-center justify-between px-4 z-40 lg:hidden">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className="p-2 -ml-2 rounded-lg hover:bg-beige/10 active:bg-beige/15 transition-colors"
-        >
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-        <h1 className="font-serif text-sm">Binocles Admin</h1>
-        <div className="w-8 h-8 rounded-full bg-beige/20 flex items-center justify-center text-xs font-medium">
-          {session?.user?.name?.charAt(0).toUpperCase() || "A"}
+      <header className="fixed top-0 left-0 right-0 bg-brown text-beige flex flex-col z-40 lg:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div className="flex items-center justify-between px-4 h-14">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 -ml-2 rounded-lg hover:bg-beige/10 active:bg-beige/15 transition-colors"
+          >
+            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+              <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+          <h1 className="font-serif text-sm">Binocles Admin</h1>
+          <div className="w-8 h-8 rounded-full bg-beige/20 flex items-center justify-center text-xs font-medium">
+            {session?.user?.name?.charAt(0).toUpperCase() || "A"}
+          </div>
         </div>
       </header>
 
@@ -209,6 +211,7 @@ export default function AdminDashboardLayout({
         >
           <aside
             className="fixed left-0 top-0 w-64 h-screen bg-brown text-beige flex flex-col"
+            style={{ paddingTop: "env(safe-area-inset-top)" }}
             onClick={(e) => e.stopPropagation()}
           >
             {sidebarContent}
@@ -220,7 +223,7 @@ export default function AdminDashboardLayout({
         {sidebarContent}
       </aside>
 
-      <main className="lg:ml-64 min-h-screen overflow-x-hidden pt-14 lg:pt-0">
+      <main className="lg:ml-64 min-h-screen overflow-x-hidden lg:pt-0" style={{ paddingTop: "calc(3.5rem + env(safe-area-inset-top))" }}>
         <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
     </div>
