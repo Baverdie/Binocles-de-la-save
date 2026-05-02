@@ -41,6 +41,7 @@ export default function Header() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         dark ? "bg-beige/95 backdrop-blur-md shadow-sm" : "bg-transparent"
       }`}
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       <nav className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-16 lg:h-20 items-center justify-between">
