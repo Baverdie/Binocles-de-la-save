@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import connectDB from "@/lib/db/mongodb";
 import AdminModel from "@/models/Admin";
 import { generateAuthUrl } from "@/lib/google-calendar";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 	try {
 		const session = await auth();
 		if (!session?.user?.email) {
