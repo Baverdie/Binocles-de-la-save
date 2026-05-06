@@ -68,7 +68,7 @@ export default function PresentationSection() {
             <div className="relative">
               <div className="relative aspect-4/5 max-h-[60vh] sm:max-h-[70vh] rounded-3xl sm:rounded-4xl overflow-hidden ring-1 ring-brown/10">
                 <Image
-                  src="/image.png"
+                  src="/portrait.webp"
                   alt="Sandra Vaissière - Opticienne"
                   fill
                   className="object-cover"

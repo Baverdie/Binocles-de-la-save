@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const photos = ["/a-propos.webp", "/a-propos2.webp"];
+const photos = ["/a-propos.webp", "/a-propos2.webp", "/a-propos3.webp", "/a-propos4.webp"];
 
 const valeurs = [
   {
