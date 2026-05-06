@@ -21,8 +21,10 @@ export async function GET() {
 		return NextResponse.redirect(url);
 	} catch (error) {
 		console.error("[OAuth] Erreur initiation:", error);
+		const host = request.headers.get("host") || "";
+		const protocol = host.includes("localhost") ? "http" : "https";
 		return NextResponse.redirect(
-			new URL("/admin/utilisateurs?calendar=error", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000")
+			new URL("/utilisateurs?calendar=error", `${protocol}://${host}`)
 		);
 	}
 }

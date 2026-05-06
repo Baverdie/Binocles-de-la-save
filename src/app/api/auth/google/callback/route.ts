@@ -7,15 +7,16 @@ import {
 	createDedicatedCalendar,
 } from "@/lib/google-calendar";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-function redirect(status: string) {
-	return NextResponse.redirect(
-		new URL(`/admin/utilisateurs?calendar=${status}`, BASE_URL)
-	);
-}
-
 export async function GET(request: NextRequest) {
+	const host = request.headers.get("host") || "";
+	const protocol = host.includes("localhost") ? "http" : "https";
+	const baseUrl = `${protocol}://${host}`;
+
+	function redirect(status: string) {
+		return NextResponse.redirect(
+			new URL(`/utilisateurs?calendar=${status}`, baseUrl)
+		);
+	}
 	const { searchParams } = request.nextUrl;
 	const code = searchParams.get("code");
 	const state = searchParams.get("state");
