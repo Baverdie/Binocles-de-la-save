@@ -50,7 +50,7 @@ function Toggle({
 
 export default function NotificationsPage() {
   const isPWA = useIsPWA();
-  const { state: pushState, subscribe, unsubscribe } = usePushSubscription();
+  const { state: pushState, error: pushError, subscribe, unsubscribe } = usePushSubscription();
   const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
@@ -114,11 +114,13 @@ export default function NotificationsPage() {
 
   const pushStateLabels: Record<typeof pushState, string> = {
     loading: "Vérification...",
+    subscribing: "Activation en cours...",
     unsupported: "Non supporté par ce navigateur",
     "needs-pwa": "Disponible uniquement depuis l'app installée",
     denied: "Permission refusée par le navigateur",
     subscribed: "Activé sur cet appareil",
     unsubscribed: "Non activé sur cet appareil",
+    error: "Erreur lors de l'activation",
   };
 
   return (
@@ -152,14 +154,20 @@ export default function NotificationsPage() {
                 Réinitialise les permissions de ce site dans les réglages de ton navigateur.
               </p>
             )}
+            {pushState === "error" && pushError && (
+              <p className="text-xs text-red-500 mt-1 max-w-50">{pushError}</p>
+            )}
           </div>
-          {pushState === "unsubscribed" && (
+          {(pushState === "unsubscribed" || pushState === "error") && (
             <button
               onClick={subscribe}
               className="px-4 py-2 bg-brown text-beige rounded-xl text-sm hover:bg-brown/90 active:bg-brown/80 transition-colors cursor-pointer"
             >
               Activer
             </button>
+          )}
+          {pushState === "subscribing" && (
+            <div className="w-5 h-5 border-2 border-brown/20 border-t-brown rounded-full animate-spin" />
           )}
           {pushState === "subscribed" && (
             <button

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-// Convertit une clé VAPID base64url en ArrayBuffer
 function urlBase64ToUint8Array(base64String: string): ArrayBuffer {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -25,20 +24,24 @@ function isStandalone(): boolean {
 
 export type SubscriptionState =
   | "loading"
+  | "subscribing"
   | "unsupported"
   | "needs-pwa"
   | "denied"
   | "subscribed"
-  | "unsubscribed";
+  | "unsubscribed"
+  | "error";
 
 interface UsePushSubscriptionReturn {
   state: SubscriptionState;
+  error: string | null;
   subscribe: () => Promise<void>;
   unsubscribe: () => Promise<void>;
 }
 
 export function usePushSubscription(): UsePushSubscriptionReturn {
   const [state, setState] = useState<SubscriptionState>("loading");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
@@ -71,19 +74,18 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
   }, []);
 
   const subscribe = useCallback(async () => {
+    setState("subscribing");
+    setError(null);
     try {
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidKey) throw new Error("Clé VAPID manquante — vérifier NEXT_PUBLIC_VAPID_PUBLIC_KEY");
+
       let registration = await navigator.serviceWorker.getRegistration("/sw.js");
       if (!registration) {
         registration = await navigator.serviceWorker.register("/sw.js");
-        await new Promise<void>((resolve) => {
-          if (registration!.active) { resolve(); return; }
-          const sw = registration!.installing || registration!.waiting;
-          if (sw) sw.addEventListener("statechange", () => { if (sw.state === "activated") resolve(); });
-          else resolve();
-        });
       }
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) throw new Error("VAPID public key manquante");
+
+      await navigator.serviceWorker.ready;
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -91,19 +93,30 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
       });
 
       const json = subscription.toJSON();
-      await fetch("/api/push/subscribe", {
+      const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           endpoint: subscription.endpoint,
-          keys: { p256dh: json.keys?.p256dh, auth: json.keys?.auth },
+          keys: {
+            p256dh: json.keys?.p256dh || "",
+            auth: json.keys?.auth || "",
+          },
         }),
       });
 
+      if (!res.ok) throw new Error(`Erreur API: ${res.status}`);
+
       setState("subscribed");
-    } catch (error) {
-      console.error("[Push] Erreur subscribe:", error);
-      if (Notification.permission === "denied") setState("denied");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[Push] Erreur subscribe:", msg);
+      setError(msg);
+      if (Notification.permission === "denied") {
+        setState("denied");
+      } else {
+        setState("error");
+      }
     }
   }, []);
 
@@ -121,10 +134,10 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
 
       await subscription.unsubscribe();
       setState("unsubscribed");
-    } catch (error) {
-      console.error("[Push] Erreur unsubscribe:", error);
+    } catch (err) {
+      console.error("[Push] Erreur unsubscribe:", err);
     }
   }, []);
 
-  return { state, subscribe, unsubscribe };
+  return { state, error, subscribe, unsubscribe };
 }
