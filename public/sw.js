@@ -1,28 +1,7 @@
-import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist } from "serwist";
-
-declare global {
-  interface WorkerGlobalScope extends SerwistGlobalConfig {
-    __SW_MANIFEST: (PrecacheEntry | string)[] | undefined;
-  }
-}
-
-declare const self: ServiceWorkerGlobalScope;
-
-const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
-  clientsClaim: true,
-  navigationPreload: false,
-  runtimeCaching: [],
-});
-
-serwist.addEventListeners();
-
-self.addEventListener("push", (event: PushEvent) => {
+self.addEventListener("push", (event) => {
   if (!event.data) return;
 
-  let payload: { title: string; body: string; url: string; icon?: string };
+  let payload;
   try {
     payload = event.data.json();
   } catch {
@@ -44,10 +23,10 @@ self.addEventListener("push", (event: PushEvent) => {
   );
 });
 
-self.addEventListener("notificationclick", (event: NotificationEvent) => {
+self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const url: string = event.notification.data?.url || "/";
+  const url = event.notification.data?.url || "/";
 
   event.waitUntil(
     self.clients

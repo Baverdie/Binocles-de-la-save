@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ServiceWorkerRegistration from "@/components/admin/ServiceWorkerRegistration";
 
 const navItems = [
   {
@@ -197,6 +198,7 @@ export default function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen">
+      <ServiceWorkerRegistration />
       <header className="fixed top-0 left-0 right-0 bg-brown text-beige flex flex-col z-40 lg:hidden" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="flex items-center justify-between px-4 h-14">
           <button
