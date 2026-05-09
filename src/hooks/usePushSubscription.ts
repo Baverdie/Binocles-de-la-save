@@ -56,11 +56,18 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
       return;
     }
 
-    navigator.serviceWorker.ready.then((registration) => {
-      registration.pushManager.getSubscription().then((sub) => {
-        setState(sub ? "subscribed" : "unsubscribed");
+    const timeout = setTimeout(() => setState("unsubscribed"), 3000);
+
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        clearTimeout(timeout);
+        return registration.pushManager.getSubscription();
+      })
+      .then((sub) => setState(sub ? "subscribed" : "unsubscribed"))
+      .catch(() => {
+        clearTimeout(timeout);
+        setState("unsubscribed");
       });
-    });
   }, []);
 
   const subscribe = useCallback(async () => {
