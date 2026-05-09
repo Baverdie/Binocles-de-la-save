@@ -22,6 +22,7 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const isSingleSlide = nouveautes.length === 1;
 
   useEffect(() => {
     if (isInView && swiperRef && !isSingleSlide) {
@@ -30,8 +31,6 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
   }, [isInView, swiperRef, isSingleSlide]);
 
   if (nouveautes.length === 0) return null;
-
-  const isSingleSlide = nouveautes.length === 1;
 
   return (
     <section
@@ -106,7 +105,7 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
           >
             {nouveautes.filter((n) => n.image).map((nouveaute) => (
               <SwiperSlide key={nouveaute._id}>
-                <div className="group relative aspect-[4/3] sm:aspect-video md:aspect-21/9 w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-brown">
+                <div className="group relative aspect-4/3 sm:aspect-video md:aspect-21/9 w-full rounded-2xl sm:rounded-3xl overflow-hidden bg-brown">
                   <Image
                     src={nouveaute.image}
                     alt={nouveaute.titre}
