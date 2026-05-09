@@ -72,7 +72,16 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
 
   const subscribe = useCallback(async () => {
     try {
-      const registration = await navigator.serviceWorker.ready;
+      let registration = await navigator.serviceWorker.getRegistration("/sw.js");
+      if (!registration) {
+        registration = await navigator.serviceWorker.register("/sw.js");
+        await new Promise<void>((resolve) => {
+          if (registration!.active) { resolve(); return; }
+          const sw = registration!.installing || registration!.waiting;
+          if (sw) sw.addEventListener("statechange", () => { if (sw.state === "activated") resolve(); });
+          else resolve();
+        });
+      }
       const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidKey) throw new Error("VAPID public key manquante");
 
