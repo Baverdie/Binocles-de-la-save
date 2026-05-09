@@ -16,6 +16,13 @@ function isIOS(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
+function isStandalone(): boolean {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}
+
 export type SubscriptionState =
   | "loading"
   | "unsupported"
@@ -39,7 +46,7 @@ export function usePushSubscription(): UsePushSubscriptionReturn {
       return;
     }
 
-    if (isIOS() && !window.matchMedia("(display-mode: standalone)").matches) {
+    if (isIOS() && !isStandalone()) {
       setState("needs-pwa");
       return;
     }
