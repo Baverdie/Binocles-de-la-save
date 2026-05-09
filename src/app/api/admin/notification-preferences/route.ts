@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import connectDB from "@/lib/db/mongodb";
 import AdminModel from "@/models/Admin";
 import NotificationPreferencesModel from "@/models/NotificationPreferences";
-import type { INotificationPreferences } from "@/models/NotificationPreferences";
 
 const VALID_EVENT_KEYS = [
   "appointment",
@@ -30,11 +29,13 @@ export async function GET() {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
-    const userId = admin._id as mongoose.Types.ObjectId;
-    let prefs = await NotificationPreferencesModel.findOne({ userId });
-    if (!prefs) {
-      prefs = await NotificationPreferencesModel.create({ userId });
-    }
+    const userId = new mongoose.Types.ObjectId(String(admin._id));
+    const prefs = await NotificationPreferencesModel.findOneAndUpdate(
+      { userId },
+      { $setOnInsert: { userId } },
+      { upsert: true, new: true }
+    );
+    if (!prefs) return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
 
     return NextResponse.json(prefs);
   } catch (error) {
@@ -55,15 +56,15 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
-    const userId = admin._id as mongoose.Types.ObjectId;
+    const userId = new mongoose.Types.ObjectId(String(admin._id));
     const body = await request.json();
 
-    let prefs = await NotificationPreferencesModel.findOne({ userId });
-    if (!prefs) {
-      prefs = (await NotificationPreferencesModel.create({ userId })) as InstanceType<
-        typeof NotificationPreferencesModel
-      > & { toObject(): INotificationPreferences };
-    }
+    let prefs = await NotificationPreferencesModel.findOneAndUpdate(
+      { userId },
+      { $setOnInsert: { userId } },
+      { upsert: true, new: true }
+    );
+    if (!prefs) return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
 
     if (typeof body.enabled === "boolean") {
       prefs.enabled = body.enabled;

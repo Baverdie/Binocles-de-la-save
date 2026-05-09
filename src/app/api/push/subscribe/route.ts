@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
-    const userId = admin._id as mongoose.Types.ObjectId;
+    const userId = new mongoose.Types.ObjectId(String(admin._id));
     const userAgent = request.headers.get("user-agent") || undefined;
 
     await PushSubscriptionModel.findOneAndUpdate(

@@ -24,7 +24,7 @@ interface NotificationPayload {
 type PushPayload = Pick<NotificationPayload, "title" | "body" | "url" | "type">;
 
 interface AdminLean {
-  _id: mongoose.Types.ObjectId;
+  _id: string | mongoose.Types.ObjectId;
   email: string;
 }
 
@@ -71,14 +71,15 @@ async function sendEmail(to: string, payload: NotificationPayload): Promise<void
 
 async function sendPush(admin: AdminLean, payload: PushPayload): Promise<void> {
   try {
-    const prefs = await NotificationPreferencesModel.findOne({ userId: admin._id });
+    const userId = new mongoose.Types.ObjectId(String(admin._id));
+    const prefs = await NotificationPreferencesModel.findOne({ userId });
 
     if (prefs) {
       if (!prefs.enabled) return;
       if (!prefs.events[payload.type]) return;
     }
 
-    const subscriptions = await PushSubscriptionModel.find({ userId: admin._id }).lean();
+    const subscriptions = await PushSubscriptionModel.find({ userId }).lean();
     if (subscriptions.length === 0) return;
 
     const pushPayload = JSON.stringify({
