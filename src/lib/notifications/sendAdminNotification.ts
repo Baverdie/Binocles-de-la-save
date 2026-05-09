@@ -1,4 +1,5 @@
 import webpush from "web-push";
+import mongoose from "mongoose";
 import connectDB from "@/lib/db/mongodb";
 import AdminModel from "@/models/Admin";
 import PushSubscriptionModel from "@/models/PushSubscription";
@@ -20,6 +21,13 @@ interface NotificationPayload {
   emailHtml: string;
 }
 
+type PushPayload = Pick<NotificationPayload, "title" | "body" | "url" | "type">;
+
+interface AdminLean {
+  _id: mongoose.Types.ObjectId;
+  email: string;
+}
+
 webpush.setVapidDetails(
   process.env.VAPID_SUBJECT || "mailto:contact@binoclesdelasave.fr",
   process.env.VAPID_PUBLIC_KEY || "",
@@ -31,12 +39,10 @@ webpush.setVapidDetails(
 export async function sendAdminNotification(payload: NotificationPayload): Promise<void> {
   try {
     await connectDB();
-    const admins = await AdminModel.find().lean();
+    const admins = (await AdminModel.find().lean()) as AdminLean[];
 
     await Promise.allSettled(
-      admins.map((admin) =>
-        Promise.allSettled([sendEmail(admin.email, payload), sendPush(admin, payload)])
-      )
+      admins.flatMap((admin) => [sendEmail(admin.email, payload), sendPush(admin, payload)])
     );
   } catch (error) {
     console.error("[Notification] Erreur globale:", error);
@@ -45,12 +51,10 @@ export async function sendAdminNotification(payload: NotificationPayload): Promi
 
 // Envoie uniquement la notification push (sans email) — à utiliser quand l'email
 // est déjà envoyé par la route appelante avec un template riche.
-export async function sendAdminPush(
-  payload: Pick<NotificationPayload, "title" | "body" | "url" | "type">
-): Promise<void> {
+export async function sendAdminPush(payload: PushPayload): Promise<void> {
   try {
     await connectDB();
-    const admins = await AdminModel.find().lean();
+    const admins = (await AdminModel.find().lean()) as AdminLean[];
     await Promise.allSettled(admins.map((admin) => sendPush(admin, payload)));
   } catch (error) {
     console.error("[Push] Erreur globale:", error);
@@ -59,22 +63,13 @@ export async function sendAdminPush(
 
 async function sendEmail(to: string, payload: NotificationPayload): Promise<void> {
   try {
-    await envoyerEmail({
-      to,
-      subject: payload.emailSubject,
-      html: payload.emailHtml,
-    });
+    await envoyerEmail({ to, subject: payload.emailSubject, html: payload.emailHtml });
   } catch (error) {
     console.error(`[Notification] Erreur email vers ${to}:`, error);
   }
 }
 
-type PushPayload = Pick<NotificationPayload, "title" | "body" | "url" | "type">;
-
-async function sendPush(
-  admin: { _id: unknown; email: string },
-  payload: PushPayload
-): Promise<void> {
+async function sendPush(admin: AdminLean, payload: PushPayload): Promise<void> {
   try {
     const prefs = await NotificationPreferencesModel.findOne({ userId: admin._id });
 
@@ -96,10 +91,7 @@ async function sendPush(
     await Promise.allSettled(
       subscriptions.map(async (sub) => {
         try {
-          await webpush.sendNotification(
-            { endpoint: sub.endpoint, keys: sub.keys },
-            pushPayload
-          );
+          await webpush.sendNotification({ endpoint: sub.endpoint, keys: sub.keys }, pushPayload);
         } catch (error: unknown) {
           const status = (error as { statusCode?: number }).statusCode;
           if (status === 410 || status === 404) {

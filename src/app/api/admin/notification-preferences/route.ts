@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { auth } from "@/lib/auth";
 import connectDB from "@/lib/db/mongodb";
 import AdminModel from "@/models/Admin";
 import NotificationPreferencesModel from "@/models/NotificationPreferences";
+import type { INotificationPreferences } from "@/models/NotificationPreferences";
+
+const VALID_EVENT_KEYS = [
+  "appointment",
+  "lensOrder",
+  "contactRequest",
+  "appointmentCancellation",
+] as const;
 
 async function getAdmin(email: string) {
   await connectDB();
@@ -21,9 +30,10 @@ export async function GET() {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
-    let prefs = await NotificationPreferencesModel.findOne({ userId: admin._id });
+    const userId = admin._id as mongoose.Types.ObjectId;
+    let prefs = await NotificationPreferencesModel.findOne({ userId });
     if (!prefs) {
-      prefs = await NotificationPreferencesModel.create({ userId: admin._id });
+      prefs = await NotificationPreferencesModel.create({ userId });
     }
 
     return NextResponse.json(prefs);
@@ -45,11 +55,14 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
+    const userId = admin._id as mongoose.Types.ObjectId;
     const body = await request.json();
 
-    let prefs = await NotificationPreferencesModel.findOne({ userId: admin._id });
+    let prefs = await NotificationPreferencesModel.findOne({ userId });
     if (!prefs) {
-      prefs = await NotificationPreferencesModel.create({ userId: admin._id });
+      prefs = (await NotificationPreferencesModel.create({ userId })) as InstanceType<
+        typeof NotificationPreferencesModel
+      > & { toObject(): INotificationPreferences };
     }
 
     if (typeof body.enabled === "boolean") {
@@ -57,9 +70,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (body.events && typeof body.events === "object") {
-      for (const key of Object.keys(body.events) as Array<keyof typeof prefs.events>) {
+      for (const key of VALID_EVENT_KEYS) {
         if (typeof body.events[key] === "boolean") {
-          prefs.events[key] = body.events[key];
+          prefs.events[key] = body.events[key] as boolean;
         }
       }
     }

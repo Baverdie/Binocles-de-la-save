@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { auth } from "@/lib/auth";
 import connectDB from "@/lib/db/mongodb";
 import AdminModel from "@/models/Admin";
@@ -25,11 +26,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Admin non trouvé" }, { status: 404 });
     }
 
+    const userId = admin._id as mongoose.Types.ObjectId;
     const userAgent = request.headers.get("user-agent") || undefined;
 
     await PushSubscriptionModel.findOneAndUpdate(
       { endpoint },
-      { userId: admin._id, endpoint, keys, userAgent },
+      { userId, endpoint, keys, userAgent },
       { upsert: true, new: true }
     );
 
