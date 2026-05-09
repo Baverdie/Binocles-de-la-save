@@ -6,6 +6,7 @@ import {
   templateNouveauContact,
   templateCommandeLentilles,
 } from "@/lib/email";
+import { sendAdminPush } from "@/lib/notifications/sendAdminNotification";
 
 interface FilePayload {
   name: string;
@@ -191,6 +192,13 @@ async function handleLentilles(
     }),
     attachments,
   });
+
+  sendAdminPush({
+    title: "Nouvelle commande de lentilles",
+    body: `${prenom} ${nom}`,
+    url: "/formulaires",
+    type: "lensOrder",
+  }).catch((err) => console.error("[Push] Erreur lentilles:", err));
 
   return NextResponse.json({ success: true });
 }

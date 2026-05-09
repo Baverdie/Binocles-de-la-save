@@ -17,6 +17,7 @@ import {
 } from "@/lib/email";
 import { genererFichierICS, genererNomFichierICS } from "@/lib/ical";
 import { getConnectedAdmin, createEvent } from "@/lib/google-calendar";
+import { sendAdminPush } from "@/lib/notifications/sendAdminNotification";
 
 const TYPES_VALIDES: TypeRdv[] = ["examen", "vente", "reparation"];
 
@@ -203,6 +204,13 @@ export async function POST(request: NextRequest) {
 				}),
 			}).catch((err) => console.error("[API] Erreur email notification admin:", err)),
 		]);
+
+		sendAdminPush({
+			title: "Nouveau rendez-vous",
+			body: `${prenom} ${nom} — ${typeLabel} le ${dateFormatee} à ${heureDebut}`,
+			url: "/rendez-vous",
+			type: "appointment",
+		}).catch((err) => console.error("[Push] Erreur RDV:", err));
 
 		return NextResponse.json({ success: true, rdv }, { status: 201 });
 	} catch (error) {
