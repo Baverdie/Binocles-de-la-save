@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -22,6 +22,12 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
   const [swiperRef, setSwiperRef] = useState<SwiperType | null>(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+
+  useEffect(() => {
+    if (isInView && swiperRef && !isSingleSlide) {
+      swiperRef.autoplay.start();
+    }
+  }, [isInView, swiperRef, isSingleSlide]);
 
   if (nouveautes.length === 0) return null;
 
@@ -75,6 +81,7 @@ export default function NouveautesSection({ nouveautes }: NouveautesSectionProps
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             onSwiper={(swiper) => {
+              swiper.autoplay.stop();
               setSwiperRef(swiper);
               setIsBeginning(swiper.isBeginning);
               setIsEnd(swiper.isEnd);
