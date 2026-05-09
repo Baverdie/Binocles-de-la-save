@@ -69,9 +69,11 @@ async function sendEmail(to: string, payload: NotificationPayload): Promise<void
   }
 }
 
+type PushPayload = Pick<NotificationPayload, "title" | "body" | "url" | "type">;
+
 async function sendPush(
   admin: { _id: unknown; email: string },
-  payload: NotificationPayload
+  payload: PushPayload
 ): Promise<void> {
   try {
     const prefs = await NotificationPreferencesModel.findOne({ userId: admin._id });
