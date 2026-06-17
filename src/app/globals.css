@@ -1,0 +1,89 @@
+@font-face {
+  font-family: "Optician Sans";
+  src: url(/fonts/Optician-Sans.otf) format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import "tailwindcss";
+
+:root {
+  --beige: #E7DAC6;
+  --brown: #412A1C;
+  --white: #ffffff;
+  --black: #171717;
+  --accent: #C48F50;
+  --background: var(--beige);
+  --foreground: var(--brown);
+}
+
+@theme inline {
+  --color-beige: var(--beige);
+  --color-brown: var(--brown);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-serif: "Outfit", system-ui, sans-serif;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+}
+
+body {
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-optician {
+  font-family: "Optician Sans", var(--font-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--brown);
+}
+
+::selection {
+  background: var(--brown);
+  color: var(--beige);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.will-change-transform {
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled):active,
+  a[href]:active,
+  [role="button"]:active {
+    scale: 0.97;
+  }
+
+  [draggable="true"]:active {
+    scale: 0.99;
+  }
+}
