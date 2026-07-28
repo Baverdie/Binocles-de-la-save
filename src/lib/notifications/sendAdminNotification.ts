@@ -23,14 +23,33 @@ interface AdminLean {
   email: string;
 }
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT || "mailto:contact@binoclesdelasave.fr",
-  process.env.VAPID_PUBLIC_KEY || "",
-  process.env.VAPID_PRIVATE_KEY || ""
-);
+let vapidConfigured = false;
+
+// Configure les clés VAPID au premier envoi plutôt qu'au chargement du module :
+// évite de faire échouer le build quand les variables d'environnement sont absentes.
+// Retourne false (et log une erreur) si les clés ne sont pas définies.
+function configureVapid(): boolean {
+  if (vapidConfigured) return true;
+
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  if (!publicKey || !privateKey) {
+    console.error("[Push] Clés VAPID manquantes — notifications push désactivées");
+    return false;
+  }
+
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || "mailto:contact@binoclesdelasave.fr",
+    publicKey,
+    privateKey
+  );
+  vapidConfigured = true;
+  return true;
+}
 
 export async function sendAdminPush(payload: PushPayload): Promise<void> {
   try {
+    if (!configureVapid()) return;
     await connectDB();
     const admins = (await AdminModel.find().lean()) as AdminLean[];
     await Promise.allSettled(admins.map((admin) => sendPush(admin, payload)));
