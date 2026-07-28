@@ -56,20 +56,32 @@ export default function AvisSection({ googleData }: AvisSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<Animation | null>(null);
   const [selectedReview, setSelectedReview] = useState<GoogleReview | null>(null);
+  const [setCount, setSetCount] = useState(2);
 
+  // Mesure la largeur exacte d'une série de cartes (écart entre les deux premières séries),
+  // ajuste le nombre de duplications pour couvrir le viewport, puis (re)lance l'animation
+  // de défilement infini : translater d'exactement une série garantit un bouclage sans coupure
   const startAnimation = useCallback(() => {
     const el = scrollRef.current;
-    if (!el) return;
+    if (!el || el.children.length < 2) return;
 
-    const halfWidth = el.scrollWidth / 2;
+    const firstSet = el.children[0] as HTMLElement;
+    const secondSet = el.children[1] as HTMLElement;
+    const setWidth = secondSet.offsetLeft - firstSet.offsetLeft;
+    if (setWidth <= 0) return;
 
+    // Il faut assez de séries pour que le viewport reste couvert pendant toute la translation
+    const needed = Math.max(2, Math.ceil(window.innerWidth / setWidth) + 1);
+    setSetCount(needed);
+
+    animationRef.current?.cancel();
     animationRef.current = el.animate(
       [
         { transform: "translateX(0)" },
-        { transform: `translateX(-${halfWidth}px)` },
+        { transform: `translateX(-${setWidth}px)` },
       ],
       {
-        duration: halfWidth * 20,
+        duration: setWidth * 20,
         iterations: Infinity,
         easing: "linear",
       }
@@ -78,7 +90,11 @@ export default function AvisSection({ googleData }: AvisSectionProps) {
 
   useEffect(() => {
     startAnimation();
-    return () => animationRef.current?.cancel();
+    window.addEventListener("resize", startAnimation);
+    return () => {
+      window.removeEventListener("resize", startAnimation);
+      animationRef.current?.cancel();
+    };
   }, [startAnimation]);
 
   const handleMouseEnter = () => animationRef.current?.pause();
@@ -87,7 +103,6 @@ export default function AvisSection({ googleData }: AvisSectionProps) {
   if (!googleData || googleData.reviews.length === 0) return null;
 
   const { rating, totalReviews, reviews, reviewUrl } = googleData;
-  const duplicated = [...reviews, ...reviews];
 
   return (
     <section
@@ -144,12 +159,16 @@ export default function AvisSection({ googleData }: AvisSectionProps) {
           onMouseLeave={handleMouseLeave}
         >
           <div ref={scrollRef} className="flex">
-            {duplicated.map((item, index) => (
-              <ReviewCard
-                key={index}
-                item={item}
-                onReadMore={() => setSelectedReview(item)}
-              />
+            {Array.from({ length: setCount }, (_, setIndex) => (
+              <div key={setIndex} className="flex shrink-0" aria-hidden={setIndex > 0}>
+                {reviews.map((item, index) => (
+                  <ReviewCard
+                    key={`${setIndex}-${index}`}
+                    item={item}
+                    onReadMore={() => setSelectedReview(item)}
+                  />
+                ))}
+              </div>
             ))}
           </div>
         </motion.div>
