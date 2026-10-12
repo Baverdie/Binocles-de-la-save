@@ -12,6 +12,7 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 		}
 
 		const { data, info } = await sharp(buffer)
+			.rotate()
 			.ensureAlpha()
 			.toColorspace("srgb")
 			.raw()
@@ -45,7 +46,10 @@ export async function optimizeGalleryImage(
 ): Promise<Buffer> {
 	try {
 		const height = crop ? Math.round((maxWidth / 4) * 3) : undefined;
+		// rotate() sans argument applique l'orientation EXIF (photos de téléphone)
+		// avant la conversion en WebP, qui supprime cette métadonnée
 		return await sharp(buffer)
+			.rotate()
 			.resize({
 				width: maxWidth,
 				height,
