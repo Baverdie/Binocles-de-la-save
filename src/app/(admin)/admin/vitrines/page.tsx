@@ -8,14 +8,25 @@ interface Vitrine {
   titre: string;
   description?: string;
   image: string;
+  imageRatio?: number;
   date: string;
   actif: boolean;
 }
 
-const defaultForm = {
+interface VitrineForm {
+  titre: string;
+  description: string;
+  image: string;
+  imageRatio: number | undefined;
+  date: string;
+  actif: boolean;
+}
+
+const defaultForm: VitrineForm = {
   titre: "",
   description: "",
   image: "",
+  imageRatio: undefined,
   date: "",
   actif: true,
 };
@@ -25,7 +36,7 @@ export default function VitrinésAdminPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Vitrine | null>(null);
-  const [formData, setFormData] = useState(defaultForm);
+  const [formData, setFormData] = useState<VitrineForm>(defaultForm);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -78,6 +89,7 @@ export default function VitrinésAdminPage() {
       titre: item.titre,
       description: item.description || "",
       image: item.image,
+      imageRatio: item.imageRatio,
       date: item.date.slice(0, 10),
       actif: item.actif,
     });
@@ -100,8 +112,13 @@ export default function VitrinésAdminPage() {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       if (!res.ok) throw new Error("Erreur upload");
 
-      const { path } = await res.json();
-      setFormData((prev) => ({ ...prev, image: path }));
+      const { path, width, height } = await res.json();
+      // Ratio largeur / hauteur pour afficher la photo dans son format naturel
+      const imageRatio =
+        typeof width === "number" && typeof height === "number" && height > 0
+          ? width / height
+          : undefined;
+      setFormData((prev) => ({ ...prev, image: path, imageRatio }));
     } catch {
       setError("Erreur lors de l'upload de l'image");
     }
@@ -130,6 +147,7 @@ export default function VitrinésAdminPage() {
           titre: formData.titre,
           description: formData.description,
           image: formData.image,
+          imageRatio: formData.imageRatio,
           date: formData.date,
           actif: formData.actif,
         }),
@@ -217,7 +235,7 @@ export default function VitrinésAdminPage() {
             <div key={item._id} className="rounded-2xl border border-brown/10 bg-beige/70 p-4 flex gap-4 items-start">
               <div className="relative w-32 h-20 rounded-xl overflow-hidden bg-brown/5 shrink-0">
                 {item.image && (
-                  <Image src={item.image} alt={item.titre} fill className="object-cover" />
+                  <Image src={item.image} alt={item.titre} fill sizes="128px" className="object-contain" />
                 )}
               </div>
 
@@ -331,8 +349,8 @@ export default function VitrinésAdminPage() {
               <div>
                 <label className="block text-xs text-brown/60 mb-2">Photo</label>
                 {formData.image && (
-                  <div className="relative w-full h-48 rounded-xl overflow-hidden mb-2">
-                    <Image src={formData.image} alt="" fill className="object-cover" />
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden mb-2 bg-brown/5">
+                    <Image src={formData.image} alt="" fill sizes="400px" className="object-contain" />
                   </div>
                 )}
                 <button

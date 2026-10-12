@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { put } from "@vercel/blob";
-import { processLogoImage, optimizeGalleryImage } from "@/lib/imageProcessing";
+import {
+  processLogoImage,
+  optimizeGalleryImage,
+  getImageDimensions,
+} from "@/lib/imageProcessing";
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +64,14 @@ export async function POST(request: NextRequest) {
       contentType,
     });
 
-    return NextResponse.json({ path: blob.url });
+    // Dimensions renvoyées au client pour afficher l'image dans son format naturel
+    const dimensions = await getImageDimensions(buffer);
+
+    return NextResponse.json({
+      path: blob.url,
+      width: dimensions?.width,
+      height: dimensions?.height,
+    });
   } catch (error) {
     console.error("[API] Erreur upload:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

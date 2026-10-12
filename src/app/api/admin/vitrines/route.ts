@@ -27,7 +27,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { titre, description, image, date, actif } = body;
+    const { titre, description, image, date, actif, imageRatio } = body;
+    // Ratio optionnel : ignoré s'il n'est pas un nombre strictement positif
+    const ratio =
+      typeof imageRatio === "number" && Number.isFinite(imageRatio) && imageRatio > 0
+        ? imageRatio
+        : undefined;
 
     if (!titre || !image || !date) {
       return NextResponse.json(
@@ -42,6 +47,7 @@ export async function POST(request: NextRequest) {
       titre,
       description: description || undefined,
       image,
+      imageRatio: ratio,
       date: new Date(date),
       actif: actif ?? true,
     });

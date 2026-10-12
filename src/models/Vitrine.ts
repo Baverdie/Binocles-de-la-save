@@ -6,6 +6,7 @@ const VitrineSchema = new Schema<Vitrine>(
     titre: { type: String, required: true, maxlength: 100 },
     description: { type: String, maxlength: 500 },
     image: { type: String, required: true },
+    imageRatio: { type: Number, min: 0 },
     date: { type: Date, required: true },
     actif: { type: Boolean, default: true },
     ordre: { type: Number, default: 0 },

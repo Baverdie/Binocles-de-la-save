@@ -39,6 +39,24 @@ export async function processLogoImage(buffer: Buffer): Promise<Buffer> {
 	}
 }
 
+/**
+ * Lit les dimensions finales d'une image (après rotation EXIF éventuelle).
+ * @param buffer - image encodée (jpeg, png, webp, svg)
+ * @returns largeur et hauteur en pixels, ou undefined si illisible
+ */
+export async function getImageDimensions(
+	buffer: Buffer
+): Promise<{ width: number; height: number } | undefined> {
+	try {
+		const { width, height } = await sharp(buffer).metadata();
+		if (!width || !height) return undefined;
+		return { width, height };
+	} catch (error) {
+		console.error("[ImageProcessing] Erreur lecture dimensions:", error);
+		return undefined;
+	}
+}
+
 export async function optimizeGalleryImage(
 	buffer: Buffer,
 	maxWidth: number = 1200,

@@ -5,6 +5,21 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import type { Vitrine } from "@/types";
 
+// Bornes du ratio affiché : évite les cadres trop étirés (panoramique ou très vertical)
+const RATIO_MIN = 2 / 3;
+const RATIO_MAX = 16 / 9;
+// Ratio utilisé tant que celui de la photo est inconnu (anciennes vitrines)
+const RATIO_DEFAUT = 4 / 3;
+
+/**
+ * Borne un ratio largeur / hauteur dans l'intervalle affichable.
+ * @param ratio - ratio brut de la photo
+ * @returns ratio compris entre RATIO_MIN et RATIO_MAX
+ */
+function clampRatio(ratio: number): number {
+  return Math.min(RATIO_MAX, Math.max(RATIO_MIN, ratio));
+}
+
 function formatDate(date: Date | string) {
   return new Date(date).toLocaleDateString("fr-FR", {
     month: "long",
@@ -16,6 +31,23 @@ function VitrineCard({ vitrine, index }: { vitrine: Vitrine; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
   const isEven = index % 2 === 0;
+  // Ratio connu dès le rendu si stocké, sinon mesuré au chargement de l'image
+  const [ratio, setRatio] = useState<number>(
+    vitrine.imageRatio ? clampRatio(vitrine.imageRatio) : RATIO_DEFAUT
+  );
+  const isPortrait = ratio < 1;
+
+  /**
+   * Mesure le ratio réel de la photo pour les vitrines sans ratio stocké.
+   * @param event - événement de chargement de l'image
+   */
+  function handleImageLoad(event: React.SyntheticEvent<HTMLImageElement>) {
+    if (vitrine.imageRatio) return;
+    const { naturalWidth, naturalHeight } = event.currentTarget;
+    if (naturalWidth > 0 && naturalHeight > 0) {
+      setRatio(clampRatio(naturalWidth / naturalHeight));
+    }
+  }
 
   return (
     <motion.div
@@ -25,13 +57,17 @@ function VitrineCard({ vitrine, index }: { vitrine: Vitrine; index: number }) {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} gap-8 md:gap-16 items-center`}
     >
-      <div className="w-full md:w-1/2 relative aspect-4/3 rounded-2xl overflow-hidden bg-brown/5">
+      <div
+        className={`w-full md:w-1/2 relative rounded-2xl overflow-hidden bg-brown/5 ${isPortrait ? "max-w-sm mx-auto md:max-w-none" : ""}`}
+        style={{ aspectRatio: ratio }}
+      >
         <Image
           src={vitrine.image}
           alt={vitrine.titre}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover"
+          onLoad={handleImageLoad}
         />
       </div>
 

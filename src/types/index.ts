@@ -19,6 +19,8 @@ export interface Vitrine {
   titre: string;
   description?: string;
   image: string;
+  /** Ratio largeur / hauteur de la photo, absent sur les anciennes vitrines */
+  imageRatio?: number;
   date: Date;
   actif: boolean;
   ordre: number;
